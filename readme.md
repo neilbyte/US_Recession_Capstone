@@ -2,6 +2,9 @@
 
 An end-to-end Machine Learning pipeline utilizing 3-month lagged macroeconomic variables to forecast US economic recessions. This project evaluates traditional linear baseline architectures against advanced non-linear classifiers using a strict chronological time-series splitting strategy to eliminate data leakage.
 
+## 🔗 Repository & Resource Links
+    https://github.com/neilbyte/US_Recession_Capstone
+
 ## 📌 Project Overview & Intent
 The primary objective of this capstone is to discover what macroeconomic data can reveal beyond static modeling. By shifting historical features forward, the system builds a 3-month early-warning predictive cushion. This repository contains the exploratory data analysis (EDA), data processing frameworks, and comparative model matrices generated for the initial report phase.
 
