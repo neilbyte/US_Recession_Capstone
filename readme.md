@@ -7,6 +7,9 @@ An enterprise-grade predictive modeling tool designed to provide an early warnin
 ## 🔗 Repository & Resource Links
     https://github.com/neilbyte/US_Recession_Capstone
 
+## Data Source
+    https://www.kaggle.com/datasets/shubhaanshkumar/us-recession-dataset/data
+    
 
 ---
 
