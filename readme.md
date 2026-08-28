@@ -97,9 +97,9 @@ We initiated the modeling phase by testing a diverse suite of classical statisti
     *   **The Wealth-Effect Indicator (`Housing_Index_Lag3 = -2.5385`):** Confirmed that downturns in real estate asset valuations heavily accelerate broad economic contraction risks.
     *   **The Yield Curve Inversion (`10Y_2Y_Spread_Lag3 = -2.5163`):** Natively captured the inverted yield curve phenomenon. As the 10-year minus 2-year bond spread drops below zero, the negative coefficient mathematically forces an exponential surge in the model's calculated recession probability.
 
-![Alt text](images/coefficients_analysis_chart.png)
-
     While these coefficients demonstrate excellent directional alignment with economic theory, the model lacked granular precision. To capture both test recessions, its rigid linear boundary required an extreme threshold setting (`t = 0.9975`), generating **9 false alarms** across the cross-validation folds.
+
+![Alt text](images/coefficients_analysis_chart.png)
 
 
 *   **The Tree Model Extrapolation Failure (Random Forest & XGBoost):** Despite performing exceptionally well on the training slices, both Random Forest and XGBoost completely **overfitted the historical windows and flatlined** during out-of-sample cross-validation testing. Tree-based architectures split data into fixed, orthogonal rectangular boundaries (step functions). Consequently, they structurally lack the mathematical ability to extrapolate trend data outside the absolute minimum and maximum bounds observed during their specific training window. When faced with chronologically shifting macroeconomic regimes (such as unprecedented post-2020 interest rate environments), their decision-tree leaves collapsed, outputting static, non-predictive averages.
