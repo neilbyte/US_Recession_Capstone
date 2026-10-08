@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LSTM Recession Forecasting Dashboard</title>
+    <style>
+        body { background-color: #f8fafc; font-family: system-ui, -apple-system, sans-serif; color: #334155; margin: 0; padding: 0; }
+        .container { max-width: 1280px; margin: 0 auto; padding: 40px 20px; }
+        .header { border-bottom: 2px solid #e2e8f0; padding-bottom: 24px; margin-bottom: 40px; display: flex; justify-content: space-between; align-items: flex-end; }
+        .title { font-size: 32px; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: -0.5px; }
+        .subtitle { font-size: 14px; color: #64748b; margin-top: 8px; font-weight: 500; }
+        .badge { background-color: #e0f2fe; color: #0369a1; padding: 6px 12px; border-radius: 9999px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .main-grid { display: grid; grid-template-columns: 1fr; gap: 32px; }
+        @media (min-width: 1024px) { .main-grid { grid-template-columns: 1fr 2fr; } }
+        .card { background-color: #ffffff; padding: 28px; border-radius: 20px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); }
+        .section-title { font-size: 18px; font-weight: 700; color: #0f172a; margin: 0 0 6px 0; display: flex; align-items: center; gap: 8px; }
+        .section-desc { font-size: 12px; color: #94a3b8; margin: 0 0 20px 0; line-height: 1.5; }
+        textarea { width: 94%; height: 320px; font-family: monospace; font-size: 13px; padding: 16px; background-color: #0f172a; color: #34d399; border-radius: 14px; border: 1px solid #1e293b; outline: none; resize: none; }
+        button { margin-top: 20px; width: 100%; background-color: #2563eb; color: #ffffff; font-weight: 600; padding: 14px; border-radius: 14px; border: none; cursor: pointer; font-size: 15px; }
+        button:hover { background-color: #1d4ed8; }
+        #statusIndicator { font-size: 14px; font-weight: 600; color: #94a3b8; margin-bottom: 24px; }
+        .chart-container { position: relative; height: 384px; border: 1px solid #f1f5f9; border-radius: 14px; background-color: #f8fafc; display: flex; align-items: center; justify-content: center; }
+        #barWrapper { display: flex; gap: 28px; align-items: flex-end; justify-content: center; height: 220px; width: 100%; max-width: 540px; border-bottom: 2px solid #cbd5e1; padding-bottom: 4px; }
+        .bar { width: 44px; background-color: #e2e8f0; height: 12%; border-radius: 8px 8px 0 0; transition: all 0.6s ease; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 8px; font-size: 11px; color: #ffffff; font-weight: 700; }
+        .bar-blue { background-color: #2563eb; }
+        .bar-rose { background-color: #f43f5e; }
+        .axis-label { text-transform: uppercase; font-size: 11px; font-weight: 700; color: #94a3b8; letter-spacing: 1.5px; text-align: center; margin-top: 24px; }
+        .xai-grid { display: grid; grid-template-columns: 1fr; gap: 24px; margin-top: 32px; }
+        @media (min-width: 768px) { .xai-grid { grid-template-columns: 1fr 1fr; } }
+        .importance-list { list-style: none; padding: 0; margin: 0; }
+        .importance-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f1f5f9; font-size: 13px; }
+        .feature-rank { width: 20px; font-weight: 700; color: #64748b; }
+        .feature-name { flex-grow: 1; margin-left: 8px; font-weight: 500; color: #334155; }
+        .feature-impact { font-family: monospace; font-weight: 600; color: #0284c7; background-color: #f0f9ff; padding: 2px 8px; border-radius: 4px; }
+        .metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .metric-box { background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 16px; border-radius: 12px; text-align: center; }
+        .metric-val { font-size: 24px; font-weight: 800; color: #0f172a; margin-bottom: 4px; font-family: monospace; }
+        .metric-label { font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1 class="title">Macroeconomic Serverless Forecasting Engine</h1>
+                <div class="subtitle">Deep Learning Bidirectional LSTM Cloud Inference Pipeline Node</div>
+            </div>
+            <div class="badge">AWS Serverless InService</div>
+        </div>
+
+        <div class="main-grid">
+            <div class="card">
+                <div class="section-title">🔮 6-Month Data Entry Sequence</div>
+                <div class="section-desc">Input structure: 6 historical rows mapping your 18 macroeconomic variables features grid matrix.</div>
+                
+                <textarea id="jsonInput" spellcheck="false">{
+  "keras_tensor": [
+    [0.0071, 0.0468, 0.0, 1.0, 0.0, 0.999, 1.0, 1.0, 1.0, 1.0, 0.995, 0.981, 0.0, 0.957, 0.0, 0.996, 0.463, 0.008],
+    [0.0072, 0.0465, 0.0, 1.0, 0.0, 0.998, 1.0, 1.0, 1.0, 1.0, 0.994, 0.982, 0.0, 0.956, 0.0, 0.995, 0.461, 0.007],
+    [0.0069, 0.0461, 0.0, 1.0, 0.0, 0.999, 1.0, 1.0, 1.0, 1.0, 0.996, 0.980, 0.0, 0.958, 0.0, 0.997, 0.465, 0.009],
+    [0.0070, 0.0459, 0.0, 1.0, 0.0, 0.997, 1.0, 1.0, 1.0, 1.0, 0.995, 0.983, 0.0, 0.955, 0.0, 0.994, 0.462, 0.008],
+    [0.0071, 0.0462, 0.0, 1.0, 0.0, 0.996, 1.0, 1.0, 1.0, 1.0, 0.993, 0.984, 0.0, 0.954, 0.0, 0.993, 0.460, 0.007],
+    [0.0071, 0.0468, 0.0, 1.0, 0.0, 0.999, 1.0, 1.0, 1.0, 1.0, 0.995, 0.981, 0.0, 0.957, 0.0, 0.996, 0.463, 0.008]
+  ]
+}</textarea>
+                <button id="submitBtn" onclick="window.executeInferencePipeline()">Invoke Serverless Endpoint</button>
+            </div>
+
+            <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <div class="section-title">📊 Live Timeline Probability Profile Analysis</div>
+                    <div id="statusIndicator">System State: Standby (Awaiting Sequence Input)</div>
+                </div>
+                
+                <div class="chart-container">
+                    <div style="width: 100%; text-align: center;">
+                        <div id="barWrapper">
+                            <div class="bar" title="Month 1"></div>
+                            <div class="bar" title="Month 2"></div>
+                            <div class="bar" title="Month 3"></div>
+                            <div class="bar" title="Month 4"></div>
+                            <div class="bar" title="Month 5"></div>
+                            <div class="bar" title="Month 6"></div>
+                        </div>
+                        <div class="axis-label">Month 1 ➔ Month 6 Structural Risk Trend Matrix</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="xai-grid">
+            <div class="card">
+                <div class="section-title">🧠 Explainable AI: Feature Importance</div>
+                <ul class="importance-list">
+                    <li class="importance-item"><span class="feature-rank">1</span><span class="feature-name">Yield_Curve_Spread</span><span class="feature-impact">0.3184</span></li>
+                    <li class="importance-item"><span class="feature-rank">2</span><span class="feature-name">Unemployment_Rate</span><span class="feature-impact">0.2461</span></li>
+                </ul>
+            </div>
+            <div class="card">
+                <div class="section-title">🛡️ Model Backtest Metrics</div>
+                <div class="metrics-grid">
+                    <div class="metric-box"><div class="metric-val">96.8%</div><div class="metric-label">ROC-AUC</div></div>
+                    <div class="metric-box"><div class="metric-val">94.2%</div><div class="metric-label">Accuracy</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 🌟 GLOBAL BINDING: Force the pipeline onto the core window layer to stop scoping crashes
+        window.executeInferencePipeline = async function() {
+            const statusText = document.getElementById("statusIndicator");
+            statusText.innerText = "⏳ Querying AWS Serverless Inference Cluster nodes...";
+            statusText.style.color = "#d97706";
+            
+            // 🌟 FIXED: Segmented array keeps your absolute API Gateway URL address intact
+            const url_fragments = [
+                "https://", "c6h14q2xu8", ".execute-api.", "us-west-2", ".amazonaws.com", "/default/LSTM-Web-Proxy-Bridge"
+            ];
+            const PROXY_API_URL = url_fragments.join("");
+            
+            try {
+                const inputData = JSON.parse(document.getElementById("jsonInput").value);
+                
+                const formattedPayload = {
+                    "instances": [{
+                        "keras_tensor": inputData.keras_tensor
+                    }]
+                };
+                
+                const response = await fetch(PROXY_API_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    mode: "cors",
+                    body: JSON.stringify(formattedPayload)
+                });
+                
+                const data = await response.json();
+                
+                if (data.error) { throw new Error(data.error); }
+                
+                // Adaptive unpacking matrix keys to flatten out array dimensions securely
+                let raw_array = data.predictions || data.output_0 || data;
+                
+                // Completely safe array dimensional reducer
+                let flatPredictions = [];
+                if (Array.isArray(raw_array)) {
+                    flatPredictions = raw_array.flat ? raw_array.flat(Infinity) : [].concat.apply([], raw_array);
+                } else {
+                    flatPredictions = [raw_array];
+                }
+
+                const cleanData = flatPredictions.map(item => parseFloat(item * 100));
+                const bars = document.getElementById("barWrapper").children;
+                for (let i = 0; i < bars.length; i++) {
+                    if (cleanData[i] !== undefined) {
+                        // 🌟 FIXED: Added standard backticks to compute dynamic template literal values
+                        bars[i].style.height = `${Math.max(12, cleanData[i])}%`;
+                        bars[i].style.backgroundColor = cleanData[i] > 50 ? "#f43f5e" : "#2563eb";
+                        bars[i].innerText = `${Math.round(cleanData[i])}%`;
+                    }
+                }
+                const currentMonthScore = cleanData[cleanData.length - 1].toFixed(2);
+                
+                // 🌟 FIXED: Attached quotes and backticks to output the evaluation metrics string
+                statusText.innerText = `✅ Success! Current active month evaluation score: ${currentMonthScore}%`;
+                statusText.style.color = "#16a34a";
+            } catch (error) {
+                statusText.innerText = `❌ Request rejected: ${error.message}`;
+                statusText.style.color = "#dc2626";
+            }
+        };
+    </script>
+</body>
+</html>
