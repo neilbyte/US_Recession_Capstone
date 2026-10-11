@@ -122,8 +122,7 @@
                 const targetColumnIndex = parseInt(document.getElementById("featureSelect").value);
                 const additiveVariance = parseFloat(document.getElementById("multiplierSlider").value);
                 
-                // 🌟 DIRECT HIGH-IMPACT ADDITIVE INJECTION:
-                // Elevate the metric directly on Month 6 to capture structural variation spikes
+                // Inject the noise directly into the final calculated month index (Month 6)
                 tensor_matrix[5][targetColumnIndex] = tensor_matrix[5][targetColumnIndex] + additiveVariance;
                 
                 const formattedPayload = {
@@ -152,13 +151,16 @@
                         bars[i].style.height = `${Math.max(12, cleanData[i])}%`;
                         bars[i].style.backgroundColor = cleanData[i] > 50 ? "#f43f5e" : "#2563eb";
                         bars[i].innerText = ${Math.round(cleanData[i])}%;
-                        }
                     }
-                    const currentMonthScore = cleanData[cleanData.length - 1].toFixed(2);
-                    statusText.innerText = ✅ Success! Simulated Month 6 Risk: ${currentMonthScore}% (Additive Variance Shock Active);
-                    statusText.style.color = "#16a34a";
-                } catch (error) {
-                    statusText.innerText = ❌ Request rejected: ${error.message};
-                    statusText.style.color = "#dc2626";
-                    }
-                };
+                }
+                const currentMonthScore = cleanData[cleanData.length - 1].toFixed(2);
+                statusText.innerText = ✅ Success! Simulated Month 6 Risk: ${currentMonthScore}% (Additive Variance Shock Active);
+                statusText.style.color = "#16a34a";
+            } catch (error) {
+                statusText.innerText = ❌ Request rejected: ${error.message};
+                statusText.style.color = "#dc2626";
+            }
+        };
+    </script>
+</body>
+</html>
