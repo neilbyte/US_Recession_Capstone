@@ -98,116 +98,65 @@
     </div>
 
     <script>
-        async function fetchFredCSV(seriesId) {
-            // 🌟 FIXED: Fragmented URL arrays guarantee that the complete graph path compiles without truncation
-            var url_pieces = ["https://", "fred.", "stlouisfed.org", "/graph/fredgraph.csv?id=", seriesId];
-            var target_url = url_pieces.join("");
-            
-            var response = await fetch(target_url);
-            var text = await response.text();
-            var lines = text.trim().split("\n");
-            
-            var data_map = {};
-            for (var i = 1; i < lines.length; i++) {
-                var parts = lines[i].split(",");
-                if (parts.length === 2) {
-                    var d_str = parts[0].trim();
-                    var v_str = parts[1].trim();
-                    if (v_str !== "." && d_str !== "") {
-                        data_map[d_str] = parseFloat(v_str);
-                    }
-                }
-            }
-            return data_map;
-        }
-
-        window.executeCalendarInference = async function() {
+        window.executeShockInference = async function() {
             var statusText = document.getElementById("statusIndicator");
-            statusText.innerText = "⏳ Ingesting over-the-air data layers from FRED servers...";
+            statusText.innerText = "⏳ Applying shock vectors and querying AWS serverless nodes...";
             statusText.style.color = "#d97706";
             
             var url_fragments = [
-                "https://", "aql3xchp5j", ".execute-api.", "us-west-2", ".amazonaws.com", "/calendar-bridge"
+                "https://", "c6h14q2xu8", ".execute-api.", "us-west-2", ".amazonaws.com", "/default/LSTM-Web-Proxy-Bridge"
             ];
             var PROXY_API_URL = url_fragments.join("");
             
-            var startVal = document.getElementById("startDate").value;
-            var endVal = document.getElementById("endDate").value;
-            var shockFeature = document.getElementById("featureSelect").value;
-            var shockValue = parseFloat(document.getElementById("multiplierSlider").value);
-            
-            if (startVal >= endVal) {
-                statusText.innerText = "❌ Date Boundary Collision: Start Date must occur before End Date.";
-                statusText.style.color = "#dc2626";
-                return;
-            }
-            
             try {
-                var unrateMap = await fetchFredCSV("UNRATE");
-                var fedfundsMap = await fetchFredCSV("FEDFUNDS");
+                var sourceData = JSON.parse(document.getElementById("jsonInput").value);
+                var tensor_matrix = sourceData.keras_tensor;
                 
-                var validDates = Object.keys(unrateMap).filter(function(d) {
-                    return d >= startVal && d <= endVal;
-                }).sort();
+                var targetColumnIndex = parseInt(document.getElementById("featureSelect").value);
+                var additiveShock = parseFloat(document.getElementById("multiplierSlider").value);
                 
-                var trailing6Dates = validDates.slice(-6);
-                if (trailing6Dates.length < 6) {
-                    throw new Error("Selected range only contains " + trailing6Dates.length + " months. Minimum 6 required.");
-                }
+                // 🌟 FIXED: Correctly targets the 6th row (index 5) of your 2D input array natively
+                tensor_matrix[5][targetColumnIndex] = tensor_matrix[5][targetColumnIndex] + additiveShock;
                 
-                var tensorMatrix = [];
-                var labels = [];
+                // Automatically wraps your 2D matrix inside an outer list container [matrix] 
+                // to construct the 3D tensor layout signature required by the Keras Serving graph
+                var formattedPayload = {
+                    "instances": [{
+                        "keras_tensor": tensor_matrix
+                    }]
+                };
                 
-                for (var i = 0; i < trailing6Dates.length; i++) {
-                    var dateKey = trailing6Dates[i];
-                    var parts = dateKey.split("-");
-                    var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-                    var dateObj = new Date(parts[0], parts[1] - 1, 1);
-                    labels.push(months[dateObj.getMonth()] + " '" + parts[0].substring(2));
-                    
-                    var unrate = unrateMap[dateKey] || 4.1;
-                    var fedfunds = fedfundsMap[dateKey] || 5.25;
-                    if (i === trailing6Dates.length - 1) {
-                        if (shockFeature === "0") unrate += shockValue;
-                        else if (shockFeature === "1") fedfunds += shockValue;
-                    }
-                    var row = [unrate, fedfunds, 4.2, 4.7, -0.5, 2.5, 3.1, 1.8, 102.1, 1350.0, 695.2, 5450.0, 67.9, 47.2, 51.4, 21000.0, 1.2, 225.0];
-                    var normalizedRow = row.map(function(val) {
-                    return val > 1.0 || val < -1.0 ? val / 100.0 : val;
+                var response = await fetch(PROXY_API_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    mode: "cors",
+                    body: JSON.stringify(formattedPayload)
                 });
-                tensorMatrix.push(normalizedRow);
-            }
-            statusText.innerText = "⏳ Payload compiled! Streaming tensor to SageMaker serverless node...";
-            var response = await fetch(PROXY_API_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            mode: "cors",
-            body: JSON.stringify({ "instances": [{ "keras_tensor": tensorMatrix }] })
-            });
-            var data = await response.json();
-            if (data.error) { throw new Error(data.error); }
-            var raw_array = data.predictions || data.output_0 || data;
-            var flatPredictions = Array.isArray(raw_array) ? raw_array.flat(Infinity) : [raw_array];
-            var cleanData = flatPredictions.map(function(item) { return parseFloat(item * 100); });
-            var bars = document.getElementById("barWrapper").children;
-            for (var i = 0; i < bars.length; i++) {
-            if (cleanData[i] !== undefined) {
-            bars[i].style.height = Math.max(12, cleanData[i]) + "%";
-            bars[i].style.backgroundColor = cleanData[i] > 50 ? "#f43f5e" : "#2563eb";
-            bars[i].innerText = Math.round(cleanData[i]) + "%";
-            bars[i].title = labels[i];
-            }
-            }
-            document.getElementById("axisTimelineLabel").innerText = labels.join(", ") + " Trajectory Trend Matrix";
-            var currentMonthScore = cleanData[cleanData.length - 1].toFixed(2);
-            statusText.innerText = "✅ Success! NBER Retrained Month 6 Risk (" + labels[labels.length - 1] + "): " + currentMonthScore + "%";
-            statusText.style.color = "#16a34a";
+                
+                var data = await response.json();
+                if (data.error) { throw new Error(data.error); }
+                
+                var raw_array = data.predictions || data.output_0 || data;
+                var flatPredictions = Array.isArray(raw_array) ? raw_array.flat(Infinity) : [raw_array];
+                var cleanData = flatPredictions.map(function(item) { return parseFloat(item * 100); });
+                
+                var bars = document.getElementById("barWrapper").children;
+                for (var i = 0; i < bars.length; i++) {
+                    if (cleanData[i] !== undefined) {
+                        bars[i].style.height = Math.max(12, cleanData[i]) + "%";
+                        bars[i].style.backgroundColor = cleanData[i] > 50 ? "#f43f5e" : "#2563eb";
+                        bars[i].innerText = Math.round(cleanData[i]) + "%";
+                    }
+                }
+                var currentMonthScore = cleanData[cleanData.length - 1].toFixed(2);
+                statusText.innerText = "✅ Success! Simulated Month 6 Risk: " + currentMonthScore + "% (Additive Shock Active)";
+                statusText.style.color = "#16a34a";
             } catch (error) {
-            statusText.innerText = "❌ Request rejected: " + error.message;
-            statusText.style.color = "#dc2626";
+                statusText.innerText = "❌ Request rejected: " + error.message;
+                statusText.style.color = "#dc2626";
             }
-            };
-        </script>
+        };
+    </script>
     </body>
 </html>
             
