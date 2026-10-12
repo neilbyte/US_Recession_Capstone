@@ -16,12 +16,15 @@
         .card { background-color: #ffffff; padding: 28px; border-radius: 20px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); }
         .section-title { font-size: 18px; font-weight: 700; color: #0f172a; margin: 0 0 6px 0; display: flex; align-items: center; gap: 8px; }
         .section-desc { font-size: 12px; color: #94a3b8; margin: 0 0 20px 0; line-height: 1.5; }
+        
         .control-group { margin-bottom: 20px; }
         label { display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 6px; }
         select, input[type="date"], input[type="range"] { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; background-color: #fff; font-size: 14px; box-sizing: border-box; }
         .slider-value { float: right; font-family: monospace; font-weight: 700; color: #dc2626; }
+        
         button { margin-top: 10px; width: 100%; background-color: #2563eb; color: #ffffff; font-weight: 600; padding: 14px; border-radius: 14px; border: none; cursor: pointer; font-size: 15px; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2); }
         button:hover { background-color: #1d4ed8; }
+        
         #statusIndicator { font-size: 14px; font-weight: 600; color: #94a3b8; margin-bottom: 24px; }
         .chart-container { position: relative; height: 384px; border: 1px solid #f1f5f9; border-radius: 14px; background-color: #f8fafc; display: flex; align-items: center; justify-content: center; }
         #barWrapper { display: flex; gap: 28px; align-items: flex-end; justify-content: center; height: 220px; width: 100%; max-width: 540px; border-bottom: 2px solid #cbd5e1; padding-bottom: 4px; }
@@ -30,6 +33,7 @@
     </style>
 </head>
 <body>
+
     <div class="container">
         <div class="header">
             <div>
@@ -38,18 +42,22 @@
             </div>
             <div class="badge">📡 Live NBER Model Active</div>
         </div>
+
         <div class="main-grid">
             <div class="card">
                 <div class="section-title">📅 Chronological Boundary Picker</div>
                 <div class="section-desc">Select an economic time-series window. The network bridge pulls the historical data rows over-the-air from the Federal Reserve database automatically.</div>
+                
                 <div class="control-group">
                     <label for="startDate">Evaluation Window Start:</label>
                     <input type="date" id="startDate" value="2023-01-01">
                 </div>
+
                 <div class="control-group">
                     <label for="endDate">Evaluation Window End:</label>
                     <input type="date" id="endDate" value="2025-12-31">
                 </div>
+
                 <div class="control-group">
                     <label for="featureSelect">Induce Vector Shock Metric:</label>
                     <select id="featureSelect">
@@ -58,17 +66,21 @@
                         <option value="4">Yield Curve Spread (Column 4 - MAX IMPACT)</option>
                     </select>
                 </div>
+                
                 <div class="control-group">
                     <label for="multiplierSlider">Additive Shock Value (+): <span id="sliderVal" class="slider-value">+0.00</span></label>
                     <input type="range" id="multiplierSlider" min="0.00" max="0.95" step="0.05" value="0.00" oninput="document.getElementById('sliderVal').innerText = '+' + this.value">
                 </div>
+                
                 <button id="submitBtn" onclick="window.executeCalendarInference()">Fetch Fed Data & Forecast</button>
             </div>
+
             <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
                 <div>
                     <div class="section-title">📊 Live Timeline Probability Profile Analysis</div>
                     <div id="statusIndicator">System State: Standby (Awaiting Calendar Ingest Command)</div>
                 </div>
+                
                 <div class="chart-container">
                     <div style="width: 100%; text-align: center;">
                         <div id="barWrapper">
@@ -85,6 +97,7 @@
             </div>
         </div>
     </div>
+
     <script>
         window.executeCalendarInference = async function() {
             var statusText = document.getElementById("statusIndicator");
@@ -144,7 +157,6 @@
                 var currentMonthScore = cleanData[cleanData.length - 1].toFixed(2);
                 statusText.innerText = "✅ Success! NBER Retrained Month 6 Risk (" + labels[labels.length - 1] + "): " + currentMonthScore + "%";
                 statusText.style.color = "#16a34a";
-                
             } catch (error) {
                 statusText.innerText = "❌ Request rejected: " + error.message;
                 statusText.style.color = "#dc2626";
