@@ -3,29 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NBER Data Acquisition Terminal</title>
+    <title>NBER Interactive Prediction Terminal</title>
     <style>
-        body { background-color: #f1f5f9; font-family: system-ui, -apple-system, sans-serif; color: #334155; margin: 0; padding: 0; }
-        .container { max-width: 1280px; margin: 0 auto; padding: 40px 20px; }
-        .header { border-bottom: 2px solid #cbd5e1; padding-bottom: 24px; margin-bottom: 40px; display: flex; justify-content: space-between; align-items: flex-end; }
+        body { background-color: #f8fafc; font-family: system-ui, -apple-system, sans-serif; color: #334155; margin: 0; padding: 0; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 40px 20px; }
+        .header { border-bottom: 2px solid #e2e8f0; padding-bottom: 24px; margin-bottom: 40px; display: flex; justify-content: space-between; align-items: flex-end; }
         .title { font-size: 32px; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: -0.5px; }
-        .subtitle { font-size: 14px; color: #475569; margin-top: 8px; font-weight: 500; }
-        .badge { background-color: #dcfce7; color: #166534; padding: 6px 12px; border-radius: 9999px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-        .main-grid { display: grid; grid-template-columns: 1fr; gap: 32px; }
-        @media (min-width: 1024px) { .main-grid { grid-template-columns: 1fr 2fr; } }
-        .card { background-color: #ffffff; padding: 28px; border-radius: 20px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); }
-        .section-title { font-size: 18px; font-weight: 700; color: #0f172a; margin: 0 0 6px 0; display: flex; align-items: center; gap: 8px; }
-        .section-desc { font-size: 12px; color: #94a3b8; margin: 0 0 20px 0; line-height: 1.5; }
+        .subtitle { font-size: 14px; color: #64748b; margin-top: 8px; font-weight: 500; }
+        .badge { background-color: #eff6ff; color: #1e40af; padding: 6px 12px; border-radius: 9999px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; border: 1px solid #bfdbfe; }
         
+        .dashboard-grid { display: grid; grid-template-columns: 1fr; gap: 32px; }
+        @media (min-width: 1024px) { .dashboard-grid { grid-template-columns: 1fr 1fr; } }
+        
+        .card { background-color: #ffffff; padding: 32px; border-radius: 24px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); }
+        .section-title { font-size: 20px; font-weight: 700; color: #0f172a; margin: 0 0 8px 0; display: flex; align-items: center; gap: 8px; }
+        .section-desc { font-size: 13px; color: #94a3b8; margin: 0 0 24px 0; line-height: 1.5; }
+        
+        .history-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; text-align: left; font-size: 14px; }
+        .history-table th { background-color: #f1f5f9; padding: 12px; font-weight: 600; color: #475569; }
+        .history-table td { padding: 12px; border-bottom: 1px solid #e2e8f0; font-weight: 500; }
+        
+        .control-panel { background-color: #f8fafc; padding: 24px; border-radius: 16px; border: 1px solid #e2e8f0; margin-bottom: 20px; }
         .control-group { margin-bottom: 20px; }
-        label { display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 6px; }
-        input[type="date"], button { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; background-color: #fff; font-size: 14px; box-sizing: border-box; }
+        .control-group:last-child { margin-bottom: 0; }
+        label { display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 8px; }
+        select, input[type="range"] { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; background-color: #fff; font-size: 14px; box-sizing: border-box; }
+        .slider-value { float: right; font-family: monospace; font-weight: 700; color: #2563eb; }
         
-        button { margin-top: 10px; background-color: #2563eb; color: #ffffff; font-weight: 600; border: none; cursor: pointer; font-size: 15px; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2); }
+        button { width: 100%; background-color: #2563eb; color: #ffffff; font-weight: 600; padding: 14px; border-radius: 12px; border: none; cursor: pointer; font-size: 15px; transition: background-color 0.2s; }
         button:hover { background-color: #1d4ed8; }
         
-        #statusIndicator { font-size: 14px; font-weight: 600; color: #94a3b8; margin-bottom: 24px; }
-        .display-box { background-color: #0f172a; border-radius: 14px; padding: 20px; font-family: monospace; font-size: 13px; color: #34d399; overflow-x: auto; white-space: pre-wrap; line-height: 1.6; max-height: 400px; }
+        #statusIndicator { font-size: 14px; font-weight: 600; color: #475569; margin-bottom: 24px; background-color: #f1f5f9; padding: 12px 16px; border-radius: 10px; display: inline-block; }
+        .chart-container { position: relative; height: 320px; border: 1px solid #e2e8f0; border-radius: 16px; background-color: #f8fafc; display: flex; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; }
+        #barWrapper { display: flex; gap: 24px; align-items: flex-end; justify-content: center; height: 240px; width: 100%; border-bottom: 2px solid #cbd5e1; padding-bottom: 4px; }
+        .bar { width: 50px; background-color: #cbd5e1; height: 12%; border-radius: 8px 8px 0 0; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: flex-end; justify-content: center; padding-bottom: 8px; font-size: 12px; color: #ffffff; font-weight: 700; position: relative; }
+        .bar-label { position: absolute; bottom: -28px; font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; }
     </style>
 </head>
 <body>
@@ -33,111 +45,149 @@
     <div class="container">
         <div class="header">
             <div>
-                <h1 class="title">NBER Data Acquisition Terminal</h1>
-                <div class="subtitle">Direct Client-Side Macro Series Harvesting Engine</div>
+                <h1 class="title">NBER Interactive Prediction Terminal</h1>
+                <div class="subtitle">Observing Real-Time Macro Trajectories and Simulating Artificial Stress Testing Horizons</div>
             </div>
-            <div class="badge">🌐 Fail-Safe Mode Active</div>
+            <div class="badge">📡 Live Keras LSTM Node</div>
         </div>
 
-        <div class="main-grid">
+        <div class="dashboard-grid">
+            <!-- LEFT PANEL: HISTORICAL OBSERVATIONS & CONTROLS -->
             <div class="card">
-                <div class="section-title">📅 Filter Configuration</div>
-                <div class="section-desc">Select chronological boundaries. Your browser will cycle through multiple open developer proxies automatically if an institutional block occurs.</div>
+                <div class="section-title">📊 Section 1: Recent Macro Observations (Last 6 Months)</div>
+                <div class="section-desc">Live historical indicators retrieved directly from your repository mirror dataset.</div>
                 
-                <div class="control-group">
-                    <label for="startDate">Target Window Start:</label>
-                    <input type="date" id="startDate" value="2023-01-01">
-                </div>
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>Month Sequence</th>
+                            <th>Unemployment Rate</th>
+                            <th>Federal Funds Rate</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTableBody">
+                        <tr><td colspan="3" style="color:#94a3b8; text-align:center;">Querying repository data nodes...</td></tr>
+                    </tbody>
+                </table>
 
-                <div class="control-group">
-                    <label for="endDate">Target Window End:</label>
-                    <input type="date" id="endDate" value="2025-12-31">
+                <div class="section-title">🔮 Section 2: Predictive Risk Simulator</div>
+                <div class="section-desc">Toggle the horizon view or adjust vector sliders to simulate custom economic contraction models.</div>
+                
+                <div class="control-panel">
+                    <div class="control-group">
+                        <label for="horizonSelect">1. Choose Forward Forecast Horizon Target:</label>
+                        <select id="horizonSelect" onchange="window.executeSimulationEngine()">
+                            <option value="6M">Next 6 Months (Standard Continuous Vector)</option>
+                            <option value="12M">Next 1 Year (Extended Macro Horizon View)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="featureSelect">2. Target Feature for Artificial Stress Shock:</label>
+                        <select id="featureSelect">
+                            <option value="0">Unemployment Rate (Column 0)</option>
+                            <option value="1">Effective Fed Funds Rate (Column 1)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="multiplierSlider">3. Inject Additive Shock Variance Delta: <span id="sliderVal" class="slider-value">+0.00%</span></label>
+                        <input type="range" id="multiplierSlider" min="-2.00" max="2.00" step="0.25" value="0.00" oninput="document.getElementById('sliderVal').innerText = (this.value >= 0 ? '+' : '') + this.value + '%'; window.executeSimulationEngine();">
+                    </div>
                 </div>
                 
-                <button id="submitBtn" onclick="window.fetchAndDisplayRawData()">Load and Display Data Table</button>
+                <button onclick="window.executeSimulationEngine()">Compute Custom Scenario Forecast</button>
             </div>
 
-            <div class="card">
-                <div class="section-title">📊 Live Macro Sheet Ingest Feed</div>
-                <div id="statusIndicator">System State: Standby (Awaiting Data Ingest Request)</div>
-                <div class="display-box" id="outputConsole">No data points compiled yet. Click the load button to query FRED nodes...</div>
+            <!-- RIGHT PANEL: LIVE MODEL CHARTS -->
+            <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <div class="section-title">📈 Section 3: Live LSTM Sequence Probability Profile</div>
+                    <div id="statusIndicator">System State: Standby (Awaiting Ingest)</div>
+                </div>
+                
+                <div class="chart-container">
+                    <div style="width: 100%;">
+                        <div id="barWrapper">
+                            <div class="bar"><span class="bar-label">M1</span></div>
+                            <div class="bar"><span class="bar-label">M2</span></div>
+                            <div class="bar"><span class="bar-label">M3</span></div>
+                            <div class="bar"><span class="bar-label">M4</span></div>
+                            <div class="bar"><span class="bar-label">M5</span></div>
+                            <div class="bar"><span class="bar-label">M6</span></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-top:24px; font-size:12px; color:#94a3b8; line-height:1.5; background-color:#f8fafc; padding:16px; border-radius:12px; border:1px solid #e2e8f0;">
+                    <strong>Model Explanation:</strong> The final bar represent your shocked/simulated target month. Red fills indicate a high-risk structural contraction state (>50% probability), while blue columns track a stable expansion corridor.
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        window.fetchAndDisplayRawData = async function() {
+        window.executeSimulationEngine = async function() {
             var statusText = document.getElementById("statusIndicator");
-            var consoleDisplay = document.getElementById("outputConsole");
-            
-            statusText.innerText = "⏳ Directing browser engine through proxy corridors...";
+            statusText.innerText = "⏳ Packaging tensor payloads and querying SageMaker layers...";
             statusText.style.color = "#d97706";
-            consoleDisplay.innerText = "Initializing multi-proxy cascade checks...";
             
-            var rawFredUrl = "https://fred.stlouisfed.org/graph/fredgraph.csv?id=UNRATE";
-            
-            // 🌟 MULTI-PROXY CASCADE: Array of proxy strategies to cycle through if a 403 hits
-            var proxyEndpoints = [
-                "https://allorigins.win" + encodeURIComponent(rawFredUrl),
-                "https://freeboard.io" + rawFredUrl,
-                "https://herokuapp.com" + rawFredUrl
+            var url_fragments = [
+                "https://", "aql3xchp5j", ".execute-api.", "us-west-2", ".amazonaws.com", "/calendar-bridge"
             ];
+            var PROXY_API_URL = url_fragments.join("");
             
-            var rawCSVText = null;
-            var successProxyIdx = -1;
+            var horizon = document.getElementById("horizonSelect").value;
+            var featIdx = document.getElementById("featureSelect").value;
+            var shockVal = parseFloat(document.getElementById("multiplierSlider").value);
             
-            for (var i = 0; i < proxyEndpoints.length; i++) {
-                try {
-                    consoleDisplay.innerText = "Attempting Route Pipeline [" + (i+1) + "/" + proxyEndpoints.length + "]...";
-                    var response = await fetch(proxyEndpoints[i]);
-                    if (response.ok) {
-                        rawCSVText = await response.text();
-                        successProxyIdx = i;
-                        break; // Stop cycling once a proxy successfully returns data
-                    }
-                } catch (e) {
-                    console.warn("Route " + (i+1) + " failed. Checking next tier...");
-                }
-            }
-            
-            if (!rawCSVText) {
-                statusText.innerText = "❌ Connection Denied Across All Routes";
-                statusText.style.color = "#dc2626";
-                consoleDisplay.innerText = "Error Logs:\nAll institutional proxies returned a 403 or network block. The St. Louis Fed root domain is tightly sealed from direct browser parsing today.";
-                return;
-            }
+            var payload = {
+                "horizon": horizon,
+                "shock_feature": featIdx,
+                "shock_value": shockVal
+            };
             
             try {
-                var lines = rawCSVText.trim().split("\n");
-                var startBoundary = document.getElementById("startDate").value;
-                var endBoundary = document.getElementById("endDate").value;
-                
-                var displayOutputBuffer = "DATE         | UNEMPLOYMENT RATE (%)\n-------------------------------------\n";
-                var parsedValidCount = 0;
-                
-                for (var i = 1; i < lines.length; i++) {
-                    var columns = lines[i].split(",");
-                    if (columns.length === 2) {
-                        var dateString = columns[0].trim();
-                        var dataValue = columns[1].trim();
-                        
-                        if (dateString >= startBoundary && dateString <= endBoundary && dataValue !== ".") {
-                            displayOutputBuffer += dateString + "   | " + dataValue + "%\n";
-                            parsedValidCount++;
-                        }
+                var response = await fetch(PROXY_API_URL, {
+                                            method: "POST",
+                                            headers: { "Content-Type": "application/json" },
+                                            mode: "cors",
+                                            body: JSON.stringify(payload)
+                                            });
+                var data = await response.json();
+                if (data.error) { throw new Error(data.error); }
+                // 1. Populate the Live Historical Table dynamically
+                var tableBody = document.getElementById("historyTableBody");
+                tableBody.innerHTML = "";
+                data.historical_observations.forEach(function(row) {
+                                                    var tr = document.createElement("tr");
+                                                    tr.innerHTML = "" + row.month + "" + row.unrate.toFixed(1) + "%" + row.fedfunds.toFixed(2) + "%";
+                                                    tableBody.appendChild(tr);
+                                                    });
+                // 2. Flatten and render the Keras prediction matrix output
+                var raw_array = data.predictions || data.output_0 || data;
+                var flatPredictions = Array.isArray(raw_array) ? raw_array.flat(Infinity) : [raw_array];
+                var cleanData = flatPredictions.map(function(item) { return parseFloat(item * 100); });
+                var labels = data.date_labels || ["M1", "M2", "M3", "M4", "M5", "M6"];
+                var bars = document.getElementById("barWrapper").children;
+                for (var i = 0; i < bars.length; i++) {
+                    if (cleanData[i] !== undefined) {
+                    bars[i].style.height = Math.max(12, cleanData[i]) + "%";
+                    bars[i].style.backgroundColor = cleanData[i] > 50 ? "#ef4444" : "#3b82f6";
+                    bars[i].innerHTML = Math.round(cleanData[i]) + "%" + labels[i] + "";
                     }
                 }
-                
-                statusText.innerText = "🎉 SUCCESS! Route [" + (successProxyIdx + 1) + "] cleared! Mapped " + parsedValidCount + " rows.";
+                var currentMonthScore = cleanData[cleanData.length - 1].toFixed(1);
+                statusText.innerText = "✅ Forecast Synced! Simulated Target Month Risk: " + currentMonthScore + "%";
                 statusText.style.color = "#16a34a";
-                consoleDisplay.innerText = displayOutputBuffer;
-                
-            } catch (error) {
-                statusText.innerText = "❌ Parsing Failure";
-                statusText.style.color = "#dc2626";
-                consoleDisplay.innerText = "Error Logs:\n" + error.message;
-            }
-        };
-    </script>
-</body>
+                } catch (error) {
+                    statusText.innerText = "❌ Request Rejected: " + error.message;
+                    statusText.style.color = "#ef4444";
+                }
+            };
+            // Auto-fire the ingestion sequence on initial startup load
+            window.onload = function() { window.executeSimulationEngine(); };
+        </script>            
+    </body>
 </html>
+
