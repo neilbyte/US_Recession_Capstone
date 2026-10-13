@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NBER Live Calendar Terminal</title>
+    <title>NBER Data Acquisition Terminal</title>
     <style>
         body { background-color: #f1f5f9; font-family: system-ui, -apple-system, sans-serif; color: #334155; margin: 0; padding: 0; }
         .container { max-width: 1280px; margin: 0 auto; padding: 40px 20px; }
@@ -19,17 +19,13 @@
         
         .control-group { margin-bottom: 20px; }
         label { display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 6px; }
-        select, input[type="date"], input[type="range"] { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; background-color: #fff; font-size: 14px; box-sizing: border-box; }
-        .slider-value { float: right; font-family: monospace; font-weight: 700; color: #dc2626; }
+        input[type="date"], button { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; background-color: #fff; font-size: 14px; box-sizing: border-box; }
         
-        button { margin-top: 10px; width: 100%; background-color: #2563eb; color: #ffffff; font-weight: 600; padding: 14px; border-radius: 14px; border: none; cursor: pointer; font-size: 15px; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2); }
+        button { margin-top: 10px; background-color: #2563eb; color: #ffffff; font-weight: 600; border: none; cursor: pointer; font-size: 15px; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2); }
         button:hover { background-color: #1d4ed8; }
         
         #statusIndicator { font-size: 14px; font-weight: 600; color: #94a3b8; margin-bottom: 24px; }
-        .chart-container { position: relative; height: 384px; border: 1px solid #f1f5f9; border-radius: 14px; background-color: #f8fafc; display: flex; align-items: center; justify-content: center; }
-        #barWrapper { display: flex; gap: 28px; align-items: flex-end; justify-content: center; height: 220px; width: 100%; max-width: 540px; border-bottom: 2px solid #cbd5e1; padding-bottom: 4px; }
-        .bar { width: 44px; background-color: #e2e8f0; height: 12%; border-radius: 8px 8px 0 0; transition: all 0.6s ease; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 8px; font-size: 11px; color: #ffffff; font-weight: 700; }
-        .axis-label { text-transform: uppercase; font-size: 11px; font-weight: 700; color: #94a3b8; letter-spacing: 1.5px; text-align: center; margin-top: 24px; }
+        .display-box { background-color: #0f172a; border-radius: 14px; padding: 20px; font-family: monospace; font-size: 13px; color: #34d399; overflow-x: auto; white-space: pre-wrap; line-height: 1.6; max-height: 400px; }
     </style>
 </head>
 <body>
@@ -37,129 +33,98 @@
     <div class="container">
         <div class="header">
             <div>
-                <h1 class="title">NBER Live Calendar Terminal</h1>
-                <div class="subtitle">Evaluating True Business Cycle Momentum via the Live AWS Standalone Node</div>
+                <h1 class="title">NBER Data Acquisition Terminal</h1>
+                <div class="subtitle">Direct Client-Side Macro Series Harvesting Engine</div>
             </div>
-            <div class="badge">📡 Live NBER Model Active</div>
+            <div class="badge">🌐 Browser Native Mode</div>
         </div>
 
         <div class="main-grid">
             <div class="card">
-                <div class="section-title">📅 Chronological Boundary Picker</div>
-                <div class="section-desc">Select an economic time-series window. The network bridge pulls the historical data rows over-the-air from the Federal Reserve database automatically.</div>
+                <div class="section-title">📅 Filter Configuration</div>
+                <div class="section-desc">Select chronological boundaries. Your web browser will fetch and parse the official FRED data rows directly using an open client proxy corridor.</div>
                 
                 <div class="control-group">
-                    <label for="startDate">Evaluation Window Start:</label>
+                    <label for="startDate">Target Window Start:</label>
                     <input type="date" id="startDate" value="2023-01-01">
                 </div>
 
                 <div class="control-group">
-                    <label for="endDate">Evaluation Window End:</label>
+                    <label for="endDate">Target Window End:</label>
                     <input type="date" id="endDate" value="2025-12-31">
                 </div>
-
-                <div class="control-group">
-                    <label for="featureSelect">Induce Vector Shock Metric:</label>
-                    <select id="featureSelect">
-                        <option value="0">Unemployment Rate (Column 0 - HIGH IMPACT)</option>
-                        <option value="1">Effective Fed Funds Rate (Column 1)</option>
-                    </select>
-                </div>
                 
-                <div class="control-group">
-                    <label for="multiplierSlider">Additive Shock Value (+): <span id="sliderVal" class="slider-value">+0.00</span></label>
-                    <input type="range" id="multiplierSlider" min="0.00" max="0.95" step="0.05" value="0.00" oninput="document.getElementById('sliderVal').innerText = '+' + this.value">
-                </div>
-                
-                <button id="submitBtn" onclick="window.executeCalendarInference()">Fetch Fed Data & Forecast</button>
+                <button id="submitBtn" onclick="window.fetchAndDisplayRawData()">Load and Display Data Table</button>
             </div>
 
-            <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
-                <div>
-                    <div class="section-title">📊 Live Timeline Probability Profile Analysis</div>
-                    <div id="statusIndicator">System State: Standby (Awaiting Calendar Ingest Command)</div>
-                </div>
-                
-                <div class="chart-container">
-                    <div style="width: 100%; text-align: center;">
-                        <div id="barWrapper">
-                            <div class="bar" title="Month 1"></div>
-                            <div class="bar" title="Month 2"></div>
-                            <div class="bar" title="Month 3"></div>
-                            <div class="bar" title="Month 4"></div>
-                            <div class="bar" title="Month 5"></div>
-                            <div class="bar" title="Month 6"></div>
-                        </div>
-                        <div class="axis-label" id="axisTimelineLabel">Rolling Sequence Structural Risk Trend</div>
-                    </div>
-                </div>
+            <div class="card">
+                <div class="section-title">📊 Live Macro Sheet Ingest Feed</div>
+                <div id="statusIndicator">System State: Standby (Awaiting Data Ingest Request)</div>
+                <div class="display-box" id="outputConsole">No data points compiled yet. Click the load button to query FRED nodes...</div>
             </div>
         </div>
     </div>
 
     <script>
-        window.executeCalendarInference = async function() {
+        window.fetchAndDisplayRawData = async function() {
             var statusText = document.getElementById("statusIndicator");
-            statusText.innerText = "⏳ Directing cloud bridge to execute over-the-air API ingestion...";
+            var consoleDisplay = document.getElementById("outputConsole");
+            
+            statusText.innerText = "⏳ Directing browser engine to query FRED public CSV stream nodes...";
             statusText.style.color = "#d97706";
+            consoleDisplay.innerText = "Connecting to Federal Reserve database clusters via client proxy...";
             
-            var url_fragments = [
-                "https://", "aql3xchp5j", ".execute-api.", "us-west-2", ".amazonaws.com", "/calendar-bridge"
-            ];
-            var PROXY_API_URL = url_fragments.join("");
+            // 🌟 THE BROWSER-Proxy CORRIDOR: Forces a clean browser-native fetch signature
+            var target_csv_route = "https://corsproxy.io?" + encodeURIComponent("https://stlouisfed.org");
             
-            var startVal = document.getElementById("startDate").value;
-            var endVal = document.getElementById("endDate").value;
-            var shockFeature = document.getElementById("featureSelect").value;
-            var shockValue = document.getElementById("multiplierSlider").value;
+            var startBoundary = document.getElementById("startDate").value;
+            var endBoundary = document.getElementById("endDate").value;
             
-            if (startVal >= endVal) {
-                statusText.innerText = "❌ Date Boundary Collision: Start Date must occur before End Date.";
+            if (startBoundary >= endBoundary) {
+                statusText.innerText = "❌ Timeline Conflict: Start date must occur before End date.";
                 statusText.style.color = "#dc2626";
+                consoleDisplay.innerText = "";
                 return;
             }
             
-            var payload = {
-                "start_date": startVal,
-                "end_date": endVal,
-                "shock_feature": shockFeature,
-                "shock_value": shockValue
-            };
-            
             try {
-                var response = await fetch(PROXY_API_URL, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    mode: "cors",
-                    body: JSON.stringify(payload)
-                });
+                var response = await fetch(target_csv_route);
+                if (!response.ok) { throw new Error("HTTP connection failure status: " + response.status); }
                 
-                var data = await response.json();
-                if (data.error) { throw new Error(data.error); }
+                var rawCSVText = await response.text();
+                var lines = rawCSVText.trim().split("\n");
                 
-                var raw_array = data.predictions || data.output_0 || data;
-                var flatPredictions = Array.isArray(raw_array) ? raw_array.flat(Infinity) : [raw_array];
-                var cleanData = flatPredictions.map(function(item) { return parseFloat(item * 100); });
-                var labels = data.date_labels || ["M1", "M2", "M3", "M4", "M5", "M6"];
+                var displayOutputBuffer = "DATE         | UNEMPLOYMENT RATE (%)\n-------------------------------------\n";
+                var parsedValidCount = 0;
                 
-                var bars = document.getElementById("barWrapper").children;
-                for (var i = 0; i < bars.length; i++) {
-                    if (cleanData[i] !== undefined) {
-                        bars[i].style.height = Math.max(12, cleanData[i]) + "%";
-                        bars[i].style.backgroundColor = cleanData[i] > 50 ? "#f43f5e" : "#2563eb";
-                        bars[i].innerText = Math.round(cleanData[i]) + "%";
-                        bars[i].title = labels[i];
+                for (var i = 1; i < lines.length; i++) {
+                    var columns = lines[i].split(",");
+                    if (columns.length === 2) {
+                        var dateString = columns[0].trim();
+                        var dataValue = columns[1].trim();
+                        
+                        if (dateString >= startBoundary && dateString <= endBoundary && dataValue !== ".") {
+                            displayOutputBuffer += dateString + "   | " + dataValue + "%\n";
+                            parsedValidCount++;
+                        }
                     }
                 }
                 
-                document.getElementById("axisTimelineLabel").innerText = labels.join(", ") + " Trajectory Trend Matrix";
-                var currentMonthScore = cleanData[cleanData.length - 1].toFixed(2);
-                statusText.innerText = "✅ Success! Real-Time Month 6 Forecasting Risk (" + labels[labels.length - 1] + "): " + currentMonthScore + "%";
-                statusText.style.color = "#16a34a";
+                if (parsedValidCount === 0) {
+                    displayOutputBuffer = "⚠️ Warning: Zero rows matched your targeted timeframe window.";
+                    statusText.innerText = "❌ Query completed with zero matching rows.";
+                    statusText.style.color = "#dc2626";
+                } else {
+                    statusText.innerText = "🎉 SUCCESS! Discovered and mapped " + parsedValidCount + " live monthly data points!";
+                    statusText.style.color = "#16a34a";
+                }
+                
+                consoleDisplay.innerText = displayOutputBuffer;
                 
             } catch (error) {
-                statusText.innerText = "❌ Request rejected: " + error.message;
+                statusText.innerText = "❌ Connection Denied";
                 statusText.style.color = "#dc2626";
+                consoleDisplay.innerText = "Error Logs:\n" + error.message;
             }
         };
     </script>
