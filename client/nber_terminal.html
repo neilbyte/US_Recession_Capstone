@@ -38,7 +38,6 @@
         .chart-container { position: relative; height: 380px; border: 1px solid #e2e8f0; border-radius: 16px; background-color: #f8fafc; display: flex; align-items: flex-end; justify-content: center; padding: 20px 20px 60px 20px; box-sizing: border-box; }
         #barWrapper { display: flex; gap: 24px; align-items: flex-end; justify-content: center; height: 240px; width: 100%; border-bottom: 2px solid #cbd5e1; padding-bottom: 4px; }
         
-        /* 🌟 DUAL CONTAINER CLASS ALIGNMENT: Decouples text nodes perfectly */
         .bar { width: 50px; background-color: #cbd5e1; height: 12%; border-radius: 8px 8px 0 0; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); position: relative; display: flex; justify-content: center; box-sizing: border-box; }
         .bar-value { position: absolute; top: -24px; font-size: 12px; font-weight: 700; color: #0f172a; width: 100%; text-align: center; }
         .bar-label { position: absolute; bottom: -54px; font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; left: 50%; transform: translateX(-50%); width: max-content; text-align: center; line-height: 1.4; display: block; }
@@ -142,7 +141,7 @@
             
             var horizon = document.getElementById("horizonSelect").value;
             var featIdx = document.getElementById("featureSelect").value;
-var shockVal = parseFloat(document.getElementById("multiplierSlider").value);
+            var shockVal = parseFloat(document.getElementById("multiplierSlider").value);
 var payload = {
 "horizon": horizon,
 "shock_feature": featIdx,
@@ -181,9 +180,8 @@ for (var i = 0; i < bars.length; i++) {
 if (cleanData[i] !== undefined) {
 bars[i].style.height = Math.max(16, cleanData[i]) + "%";
 bars[i].style.backgroundColor = cleanData[i] > 50 ? "#ef4444" : "#3b82f6";
-var labelText = labels[i].includes(" ") ? labels[i].replace(" ", "
-") : labels[i];
-// 🌟 EXPLICIT DUAL CONTEXT INJECTION: Separates percentages from baseline month tags cleanly
+// 🌟 FIXED INLINE TOKEN: Flattened single-line expression completely eliminates newline string parsing breaks
+var labelText = labels[i].split(" ").join("");
 bars[i].innerHTML = "" + Math.round(cleanData[i]) + "%" + labelText + "";
 }
 }
