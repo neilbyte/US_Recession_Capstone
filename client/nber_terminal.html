@@ -178,8 +178,7 @@ for (var i = 0; i < bars.length; i++) {
 if (cleanData[i] !== undefined) {
 bars[i].style.height = Math.max(12, cleanData[i]) + "%";
 bars[i].style.backgroundColor = cleanData[i] > 50 ? "#ef4444" : "#3b82f6";
-bars[i].innerHTML = Math.round(cleanData[i]) + "%" + labels[i].replace(" ", "
-") + "";
+bars[i].innerHTML = Math.round(cleanData[i]) + "%" + labels[i].replace(" ", "") + "";
 }
 }
 var currentMonthScore = cleanData[cleanData.length - 1].toFixed(1);
