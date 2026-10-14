@@ -16,12 +16,12 @@
         @media (min-width: 1024px) { .dashboard-grid { grid-template-columns: 1fr 1fr; } }
         
         .card { background-color: #ffffff; padding: 32px; border-radius: 24px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); }
-        .section-title { font-size: 20px; font-weight: 700; color: #0f172a; margin: 0 0 8px 0; display: flex; align-items: center; gap: 8px; }
+        .section-title { font-size: 18px; font-weight: 700; color: #0f172a; margin: 0 0 8px 0; display: flex; align-items: center; gap: 8px; }
         .section-desc { font-size: 13px; color: #94a3b8; margin: 0 0 24px 0; line-height: 1.5; }
         
-        .history-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; text-align: left; font-size: 14px; }
-        .history-table th { background-color: #f1f5f9; padding: 12px; font-weight: 600; color: #475569; }
-        .history-table td { padding: 12px; border-bottom: 1px solid #e2e8f0; font-weight: 500; }
+        .history-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; text-align: left; font-size: 14px; table-layout: fixed; }
+        .history-table th { background-color: #f1f5f9; padding: 12px; font-weight: 600; color: #475569; border-bottom: 2px solid #e2e8f0; }
+        .history-table td { padding: 12px; border-bottom: 1px solid #e2e8f0; font-weight: 500; color: #334155; }
         
         .control-panel { background-color: #f8fafc; padding: 24px; border-radius: 16px; border: 1px solid #e2e8f0; margin-bottom: 20px; }
         .control-group { margin-bottom: 20px; }
@@ -33,11 +33,11 @@
         button { width: 100%; background-color: #2563eb; color: #ffffff; font-weight: 600; padding: 14px; border-radius: 12px; border: none; cursor: pointer; font-size: 15px; transition: background-color 0.2s; }
         button:hover { background-color: #1d4ed8; }
         
-        #statusIndicator { font-size: 14px; font-weight: 600; color: #475569; margin-bottom: 24px; background-color: #f1f5f9; padding: 12px 16px; border-radius: 10px; display: inline-block; }
-        .chart-container { position: relative; height: 320px; border: 1px solid #e2e8f0; border-radius: 16px; background-color: #f8fafc; display: flex; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; }
+        #statusIndicator { font-size: 14px; font-weight: 600; color: #475569; margin-bottom: 24px; background-color: #f1f5f9; padding: 12px 16px; border-radius: 10px; display: inline-block; width: 100%; box-sizing: border-box; }
+        .chart-container { position: relative; height: 320px; border: 1px solid #e2e8f0; border-radius: 16px; background-color: #f8fafc; display: flex; align-items: center; justify-content: center; padding: 20px 20px 40px 20px; box-sizing: border-box; }
         #barWrapper { display: flex; gap: 24px; align-items: flex-end; justify-content: center; height: 240px; width: 100%; border-bottom: 2px solid #cbd5e1; padding-bottom: 4px; }
-        .bar { width: 50px; background-color: #cbd5e1; height: 12%; border-radius: 8px 8px 0 0; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: flex-end; justify-content: center; padding-bottom: 8px; font-size: 12px; color: #ffffff; font-weight: 700; position: relative; }
-        .bar-label { position: absolute; bottom: -28px; font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; }
+        .bar { width: 50px; background-color: #cbd5e1; height: 12%; border-radius: 8px 8px 0 0; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: flex-end; justify-content: center; padding-bottom: 28px; font-size: 12px; color: #ffffff; font-weight: 700; position: relative; }
+        .bar-label { position: absolute; bottom: -28px; font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; left: 50%; transform: translateX(-50%); width: max-content; }
     </style>
 </head>
 <body>
@@ -52,21 +52,20 @@
         </div>
 
         <div class="dashboard-grid">
-            <!-- LEFT PANEL: HISTORICAL OBSERVATIONS & CONTROLS -->
             <div class="card">
                 <div class="section-title">📊 Section 1: Recent Macro Observations (Last 6 Months)</div>
-                <div class="section-desc">Live historical indicators retrieved directly from your repository mirror dataset.</div>
+                <div class="section-desc">Live historical indicators retrieved directly from your Amazon S3 subfolder data mirror.</div>
                 
                 <table class="history-table">
                     <thead>
                         <tr>
-                            <th>Month Sequence</th>
+                            <th>Month Reference</th>
                             <th>Unemployment Rate</th>
                             <th>Federal Funds Rate</th>
                         </tr>
                     </thead>
                     <tbody id="historyTableBody">
-                        <tr><td colspan="3" style="color:#94a3b8; text-align:center;">Querying repository data nodes...</td></tr>
+                        <tr><td colspan="3" style="color:#94a3b8; text-align:center;">Querying cloud storage layers...</td></tr>
                     </tbody>
                 </table>
 
@@ -99,10 +98,9 @@
                 <button onclick="window.executeSimulationEngine()">Compute Custom Scenario Forecast</button>
             </div>
 
-            <!-- RIGHT PANEL: LIVE MODEL CHARTS -->
             <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
                 <div>
-                    <div class="section-title">📈 Section 3: Live LSTM Sequence Probability Profile</div>
+                    <div class="section-title">9; Section 3: Live LSTM Sequence Probability Profile</div>
                     <div id="statusIndicator">System State: Standby (Awaiting Ingest)</div>
                 </div>
                 
@@ -120,7 +118,7 @@
                 </div>
                 
                 <div style="margin-top:24px; font-size:12px; color:#94a3b8; line-height:1.5; background-color:#f8fafc; padding:16px; border-radius:12px; border:1px solid #e2e8f0;">
-                    <strong>Model Explanation:</strong> The final bar represent your shocked/simulated target month. Red fills indicate a high-risk structural contraction state (>50% probability), while blue columns track a stable expansion corridor.
+                    <strong>Model Explanation:</strong> The final bar represents your shocked/simulated target month. Red fills indicate a high-risk structural contraction state (&gt;50% probability), while blue columns track a stable expansion corridor.
                 </div>
             </div>
         </div>
@@ -129,7 +127,7 @@
     <script>
         window.executeSimulationEngine = async function() {
             var statusText = document.getElementById("statusIndicator");
-            statusText.innerText = "⏳ Packaging tensor payloads and querying SageMaker layers...";
+            statusText.innerText = "⏳ Packaging tensor payloads and querying serverless cloud layers...";
             statusText.style.color = "#d97706";
             
             var url_fragments = [
@@ -146,25 +144,24 @@
                 "shock_feature": featIdx,
                 "shock_value": shockVal
             };
-            
+
             try {
                 var response = await fetch(PROXY_API_URL, {
-                                            method: "POST",
-                                            headers: { "Content-Type": "application/json" },
-                                            mode: "cors",
-                                            body: JSON.stringify(payload)
-                                            });
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    mode: "cors",
+                    body: JSON.stringify(payload)
+                    });
                 var data = await response.json();
                 if (data.error) { throw new Error(data.error); }
-                // 1. Populate the Live Historical Table dynamically
+                // 🌟 FIXED LAYOUT: Spreads metrics perfectly across three clear table cell tracks
                 var tableBody = document.getElementById("historyTableBody");
                 tableBody.innerHTML = "";
                 data.historical_observations.forEach(function(row) {
-                                                    var tr = document.createElement("tr");
-                                                    tr.innerHTML = "" + row.month + "" + row.unrate.toFixed(1) + "%" + row.fedfunds.toFixed(2) + "%";
-                                                    tableBody.appendChild(tr);
-                                                    });
-                // 2. Flatten and render the Keras prediction matrix output
+                    var tr = document.createElement("tr");
+                    tr.innerHTML = "" + row.month + "" + row.unrate.toFixed(1) + "%" + row.fedfunds.toFixed(2) + "%";
+                    tableBody.appendChild(tr);
+                    });
                 var raw_array = data.predictions || data.output_0 || data;
                 var flatPredictions = Array.isArray(raw_array) ? raw_array.flat(Infinity) : [raw_array];
                 var cleanData = flatPredictions.map(function(item) { return parseFloat(item * 100); });
@@ -172,22 +169,23 @@
                 var bars = document.getElementById("barWrapper").children;
                 for (var i = 0; i < bars.length; i++) {
                     if (cleanData[i] !== undefined) {
-                    bars[i].style.height = Math.max(12, cleanData[i]) + "%";
-                    bars[i].style.backgroundColor = cleanData[i] > 50 ? "#ef4444" : "#3b82f6";
-                    bars[i].innerHTML = Math.round(cleanData[i]) + "%" + labels[i] + "";
+                        bars[i].style.height = Math.max(12, cleanData[i]) + "%";
+                        bars[i].style.backgroundColor = cleanData[i] > 50 ? "#ef4444" : "#3b82f6";
+                        bars[i].innerHTML = Math.round(cleanData[i]) + "%" + labels[i] + "";
                     }
                 }
                 var currentMonthScore = cleanData[cleanData.length - 1].toFixed(1);
                 statusText.innerText = "✅ Forecast Synced! Simulated Target Month Risk: " + currentMonthScore + "%";
                 statusText.style.color = "#16a34a";
-                } catch (error) {
-                    statusText.innerText = "❌ Request Rejected: " + error.message;
-                    statusText.style.color = "#ef4444";
-                }
-            };
-            // Auto-fire the ingestion sequence on initial startup load
-            window.onload = function() { window.executeSimulationEngine(); };
-        </script>            
-    </body>
+            } catch (error) {
+                statusText.innerText = "❌ Request Rejected: " + error.message;
+                statusText.style.color = "#ef4444";
+            }
+        };
+        
+        window.onload = function() { window.executeSimulationEngine(); };
+
+    </script>            
+</body>
 </html>
 
