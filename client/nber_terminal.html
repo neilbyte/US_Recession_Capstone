@@ -35,16 +35,14 @@
         
         #statusIndicator { font-size: 14px; font-weight: 600; color: #475569; margin-bottom: 24px; background-color: #f1f5f9; padding: 12px 16px; border-radius: 10px; display: inline-block; width: 100%; box-sizing: border-box; }
         
-        /* 🌟 EXTENDED BOX PADDING FOR THE BASELINE SEPARATION */
+        /* 🌟 FIXED HEIGHT & SPACING: Pushes the container boundaries out to handle clean relative metrics labels */
         .chart-container { position: relative; height: 380px; border: 1px solid #e2e8f0; border-radius: 16px; background-color: #f8fafc; display: flex; align-items: flex-end; justify-content: center; padding: 20px 20px 80px 20px; box-sizing: border-box; }
         #barWrapper { display: flex; gap: 24px; align-items: flex-end; justify-content: center; height: 220px; width: 100%; border-bottom: 2px solid #cbd5e1; padding-bottom: 4px; }
         
-        /* 🌟 THE VISUAL ALIGNMENT RESOLUTION: */
-        /* Forcing explicit flex column directives isolates the percentage value container text */
-        /* away from the tracking timeline tags natively under all resolution bounds. */
+        /* 🌟 GRID COLUMN ENGINE: Explicitly stacks percentages inside the bar while moving date text underneath */
         .bar { width: 50px; background-color: #cbd5e1; height: 12%; border-radius: 8px 8px 0 0; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); position: relative; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; box-sizing: border-box; padding-top: 8px; }
-        .bar-value { font-size: 12px; font-weight: 700; color: #ffffff; text-align: center; text-shadow: 0 1px 2px rgba(0,0,0,0.3); z-index: 10; }
-        .bar-label { position: absolute; bottom: -64px; font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; left: 50%; transform: translateX(-50%); width: max-content; text-align: center; line-height: 1.4; display: block; }
+        .bar-value { font-size: 12px; font-weight: 700; color: #ffffff; text-shadow: 0 1px 2px rgba(0,0,0,0.4); z-index: 10; pointer-events: none; }
+        .bar-label { position: absolute; bottom: -54px; font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; left: 50%; transform: translateX(-50%); width: max-content; text-align: center; line-height: 1.4; display: block; }
     </style>
 </head>
 <body>
@@ -55,7 +53,6 @@
                 <h1 class="title">NBER Interactive Prediction Terminal</h1>
                 <div class="subtitle">Observing Real-Time Macro Trajectories and Simulating Artificial Stress Testing Horizons</div>
             </div>
-            .badge Live Keras LSTM Node
         </div>
 
         <div class="dashboard-grid">
@@ -139,6 +136,7 @@
             statusText.style.color = "#d97706";
             
             var url_fragments = ["https://", "aql3xchp5j", ".execute-api.", "us-west-2", ".amazonaws.com", "/calendar-bridge"];
+
 var PROXY_API_URL = url_fragments.join("");
 var horizon = document.getElementById("horizonSelect").value;
 var featIdx = document.getElementById("featureSelect").value;
@@ -161,15 +159,10 @@ var tableBody = document.getElementById("historyTableBody");
 tableBody.innerHTML = "";
 data.historical_observations.forEach(function(row) {
 var tr = document.createElement("tr");
-var tdMonth = document.createElement("td");
-tdMonth.innerText = row.month;
-var tdUnrate = document.createElement("td");
-tdUnrate.innerText = row.unrate.toFixed(1) + "%";
-var tdFed = document.createElement("td");
-tdFed.innerText = row.fedfunds.toFixed(2) + "%";
-tr.appendChild(tdMonth);
-tr.appendChild(tdUnrate);
-tr.appendChild(tdFed);
+var tdMonth = document.createElement("td"); tdMonth.innerText = row.month;
+var tdUnrate = document.createElement("td"); tdUnrate.innerText = row.unrate.toFixed(1) + "%";
+var tdFed = document.createElement("td"); tdFed.innerText = row.fedfunds.toFixed(2) + "%";
+tr.appendChild(tdMonth); tr.appendChild(tdUnrate); tr.appendChild(tdFed);
 tableBody.appendChild(tr);
 });
 var raw_array = data.predictions || data.output_0 || data;
@@ -181,6 +174,7 @@ for (var i = 0; i < bars.length; i++) {
 if (cleanData[i] !== undefined) {
 bars[i].style.height = Math.max(16, cleanData[i]) + "%";
 bars[i].style.backgroundColor = cleanData[i] > 50 ? "#ef4444" : "#3b82f6";
+// 🌟 SINGLE-LINE INJECTION: Safely maps text layers without string array character breaks
 var labelText = labels[i].split(" ").join("");
 bars[i].innerHTML = "" + Math.round(cleanData[i]) + "%" + labelText + "";
 }
