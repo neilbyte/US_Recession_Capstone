@@ -100,7 +100,7 @@
 
             <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
                 <div>
-                    <div class="section-title">9; Section 3: Live LSTM Sequence Probability Profile</div>
+                    <div class="section-title">📊 Section 3: Live LSTM Sequence Probability Profile</div>
                     <div id="statusIndicator">System State: Standby (Awaiting Ingest)</div>
                 </div>
                 
@@ -146,44 +146,51 @@
             };
 
             try {
-                var response = await fetch(PROXY_API_URL, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    mode: "cors",
-                    body: JSON.stringify(payload)
-                    });
-                var data = await response.json();
-                if (data.error) { throw new Error(data.error); }
-                // 🌟 FIXED LAYOUT: Spreads metrics perfectly across three clear table cell tracks
-                var tableBody = document.getElementById("historyTableBody");
-                tableBody.innerHTML = "";
-                data.historical_observations.forEach(function(row) {
-                    var tr = document.createElement("tr");
-                    tr.innerHTML = "" + row.month + "" + row.unrate.toFixed(1) + "%" + row.fedfunds.toFixed(2) + "%";
-                    tableBody.appendChild(tr);
-                    });
-                var raw_array = data.predictions || data.output_0 || data;
-                var flatPredictions = Array.isArray(raw_array) ? raw_array.flat(Infinity) : [raw_array];
-                var cleanData = flatPredictions.map(function(item) { return parseFloat(item * 100); });
-                var labels = data.date_labels || ["M1", "M2", "M3", "M4", "M5", "M6"];
-                var bars = document.getElementById("barWrapper").children;
-                for (var i = 0; i < bars.length; i++) {
-                    if (cleanData[i] !== undefined) {
-                        bars[i].style.height = Math.max(12, cleanData[i]) + "%";
-                        bars[i].style.backgroundColor = cleanData[i] > 50 ? "#ef4444" : "#3b82f6";
-                        bars[i].innerHTML = Math.round(cleanData[i]) + "%" + labels[i] + "";
-                    }
-                }
-                var currentMonthScore = cleanData[cleanData.length - 1].toFixed(1);
-                statusText.innerText = "✅ Forecast Synced! Simulated Target Month Risk: " + currentMonthScore + "%";
-                statusText.style.color = "#16a34a";
-            } catch (error) {
-                statusText.innerText = "❌ Request Rejected: " + error.message;
-                statusText.style.color = "#ef4444";
-            }
-        };
-        
-        window.onload = function() { window.executeSimulationEngine(); };
+var response = await fetch(PROXY_API_URL, {
+method: "POST",
+headers: { "Content-Type": "application/json" },
+mode: "cors",
+body: JSON.stringify(payload)
+});
+var data = await response.json();
+if (data.error) { throw new Error(data.error); }
+// 🌟 EXPLICIT DOM CELL GEN: Safely creates individual td tracks to stop clumping errors
+var tableBody = document.getElementById("historyTableBody");
+tableBody.innerHTML = "";
+data.historical_observations.forEach(function(row) {
+var tr = document.createElement("tr");
+var tdMonth = document.createElement("td");
+tdMonth.innerText = row.month;
+var tdUnrate = document.createElement("td");
+tdUnrate.innerText = row.unrate.toFixed(1) + "%";
+var tdFed = document.createElement("td");
+tdFed.innerText = row.fedfunds.toFixed(2) + "%";
+tr.appendChild(tdMonth);
+tr.appendChild(tdUnrate);
+tr.appendChild(tdFed);
+tableBody.appendChild(tr);
+});
+var raw_array = data.predictions || data.output_0 || data;
+var flatPredictions = Array.isArray(raw_array) ? raw_array.flat(Infinity) : [raw_array];
+var cleanData = flatPredictions.map(function(item) { return parseFloat(item * 100); });
+var labels = data.date_labels || ["M1", "M2", "M3", "M4", "M5", "M6"];
+var bars = document.getElementById("barWrapper").children;
+for (var i = 0; i < bars.length; i++) {
+if (cleanData[i] !== undefined) {
+bars[i].style.height = Math.max(12, cleanData[i]) + "%";
+bars[i].style.backgroundColor = cleanData[i] > 50 ? "#ef4444" : "#3b82f6";
+bars[i].innerHTML = Math.round(cleanData[i]) + "%" + labels[i] + "";
+}
+}
+var currentMonthScore = cleanData[cleanData.length - 1].toFixed(1);
+statusText.innerText = "✅ Forecast Synced! Simulated Target Month Risk: " + currentMonthScore + "%";
+statusText.style.color = "#16a34a";
+} catch (error) {
+statusText.innerText = "❌ Request Rejected: " + error.message;
+statusText.style.color = "#ef4444";
+}
+};
+window.onload = function() { window.executeSimulationEngine(); };
 
     </script>            
 </body>
