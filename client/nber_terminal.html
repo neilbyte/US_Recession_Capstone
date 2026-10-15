@@ -35,12 +35,12 @@
         
         #statusIndicator { font-size: 14px; font-weight: 600; color: #475569; margin-bottom: 24px; background-color: #f1f5f9; padding: 12px 16px; border-radius: 10px; display: inline-block; width: 100%; box-sizing: border-box; }
         
+        /* 🌟 EXTENDED BOX PADDING FOR THE BASELINE SEPARATION */
         .chart-container { position: relative; height: 380px; border: 1px solid #e2e8f0; border-radius: 16px; background-color: #f8fafc; display: flex; align-items: flex-end; justify-content: center; padding: 20px 20px 80px 20px; box-sizing: border-box; }
         #barWrapper { display: flex; gap: 24px; align-items: flex-end; justify-content: center; height: 220px; width: 100%; border-bottom: 2px solid #cbd5e1; padding-bottom: 4px; }
         
-        .bar { width: 50px; background-color: #cbd5e1; height: 12%; border-radius: 8px 8px 0 0; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); position: relative; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; box-sizing: border-box; padding-top: 8px; }
-        .bar-value { font-size: 12px; font-weight: 700; color: #ffffff; text-shadow: 0 1px 2px rgba(0,0,0,0.4); z-index: 10; pointer-events: none; }
-        .bar-label { position: absolute; bottom: -54px; font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; left: 50%; transform: translateX(-50%); width: max-content; text-align: center; line-height: 1.4; display: block; }
+        /* 🌟 BASE BAR CLASS */
+        .bar { width: 50px; background-color: #cbd5e1; height: 12%; border-radius: 8px 8px 0 0; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); position: relative; box-sizing: border-box; }
     </style>
 </head>
 <body>
@@ -78,7 +78,6 @@
                 <div class="control-panel">
                     <div class="control-group">
                         <label for="horizonSelect">1. Choose Forward Forecast Horizon Target:</label>
-                        <!-- 🌟 FIXED DROPDOWN: Removed trigger to only calculate on manual button push -->
                         <select id="horizonSelect">
                             <option value="6M">Next 6 Months (Standard Continuous Vector)</option>
                             <option value="12M">Next 1 Year (Extended Macro Horizon View)</option>
@@ -95,7 +94,6 @@
                     
                     <div class="control-group">
                         <label for="multiplierSlider">3. Inject Additive Shock Variance Delta:</label>
-                        <!-- 🌟 FIXED SLIDER: oninput only updates the visual text number label. The automatic JS calculation trigger has been completely stripped out. -->
                         <input type="range" id="multiplierSlider" min="-2.00" max="2.00" step="0.25" value="0.00" oninput="document.getElementById('sliderVal').innerText = (this.value >= 0 ? '+' : '') + this.value + '%';">
                         <div style="margin-top: 8px;"><span id="sliderVal" class="slider-value" style="float:none; display:inline-block;">+0.00%</span></div>
                     </div>
@@ -140,21 +138,24 @@
             var PROXY_API_URL = url_fragments.join("");
             
             var horizon = document.getElementById("horizonSelect").value;
-var featIdx = document.getElementById("featureSelect").value;
-var shockVal = parseFloat(document.getElementById("multiplierSlider").value);
-var payload = {
-"horizon": horizon,
-"shock_feature": featIdx,
-"shock_value": shockVal
-};
-try {
-var response = await fetch(PROXY_API_URL, {
-method: "POST",
-headers: { "Content-Type": "application/json" },
-mode: "cors",
-body: JSON.stringify(payload)
-});
-var data = await response.json();
+            var featIdx = document.getElementById("featureSelect").value;
+            var shockVal = parseFloat(document.getElementById("multiplierSlider").value);
+            
+            var payload = {
+                "horizon": horizon,
+                "shock_feature": featIdx,
+                "shock_value": shockVal
+            };
+            
+            try {
+                var response = await fetch(PROXY_API_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    mode: "cors",
+                    body: JSON.stringify(payload)
+                });
+                
+                var data = await response.json();
 if (data.error) { throw new Error(data.error); }
 var tableBody = document.getElementById("historyTableBody");
 tableBody.innerHTML = "";
@@ -175,8 +176,19 @@ for (var i = 0; i < bars.length; i++) {
 if (cleanData[i] !== undefined) {
 bars[i].style.height = Math.max(16, cleanData[i]) + "%";
 bars[i].style.backgroundColor = cleanData[i] > 50 ? "#ef4444" : "#3b82f6";
-var labelText = labels[i].split(" ").join("");
-bars[i].innerHTML = "" + Math.round(cleanData[i]) + "%" + labelText + "";
+// Clear any old text tracks completely
+bars[i].innerHTML = "";
+// 🌟 RUNTIME INLINE ELEMENT GENERATION BYPASSES BROWSER CACHE CAUSE:
+// Forcing elements to form using distinct DOM nodes with explicit styling strings
+// completely ignores cached external stylesheets.
+var valSpan = document.createElement("span");
+valSpan.innerText = Math.round(cleanData[i]) + "%";
+valSpan.style.cssText = "position:absolute; top:-24px; left:0; width:100%; text-align:center; font-size:12px; font-weight:700; color:#0f172a;";
+var lblSpan = document.createElement("span");
+lblSpan.innerHTML = labels[i].split(" ").join("");
+lblSpan.style.cssText = "position:absolute; bottom:-56px; left:50%; transform:translateX(-50%); font-size:11px; font-weight:700; color:#64748b; text-transform:uppercase; text-align:center; line-height:1.4; display:block; width:max-content;";
+bars[i].appendChild(valSpan);
+bars[i].appendChild(lblSpan);
 }
 }
 var currentMonthScore = cleanData[cleanData.length - 1].toFixed(1);
@@ -187,7 +199,6 @@ statusText.innerText = "❌ Request Rejected: " + error.message;
 statusText.style.color = "#ef4444";
 }
 };
-// 🌟 AUTOMATION SEPARATION: Still loads baseline calculations on startup, but stops input listeners from firing prematurely.
 window.onload = function() { window.executeSimulationEngine(); };
 
     </script>            
