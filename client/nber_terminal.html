@@ -35,12 +35,10 @@
         
         #statusIndicator { font-size: 14px; font-weight: 600; color: #475569; margin-bottom: 24px; background-color: #f1f5f9; padding: 12px 16px; border-radius: 10px; display: inline-block; width: 100%; box-sizing: border-box; }
         
-        /* 🌟 EXTENDED BOX PADDING FOR THE BASELINE SEPARATION */
         .chart-container { position: relative; height: 380px; border: 1px solid #e2e8f0; border-radius: 16px; background-color: #f8fafc; display: flex; align-items: flex-end; justify-content: center; padding: 20px 20px 80px 20px; box-sizing: border-box; }
         #barWrapper { display: flex; gap: 24px; align-items: flex-end; justify-content: center; height: 220px; width: 100%; border-bottom: 2px solid #cbd5e1; padding-bottom: 4px; }
         
-        /* 🌟 BASE BAR CLASS */
-        .bar { width: 50px; background-color: #cbd5e1; height: 12%; border-radius: 8px 8px 0 0; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); position: relative; box-sizing: border-box; }
+        .bar { width: 50px; background-color: #cbd5e1; height: 12%; border-radius: 8px 8px 0 0; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); position: relative; display: flex; justify-content: center; box-sizing: border-box; }
     </style>
 </head>
 <body>
@@ -73,7 +71,7 @@
                 </table>
 
                 <div class="section-title">🔮 Section 2: Predictive Risk Simulator</div>
-                <div class="section-desc">Toggle the horizon view or adjust vector sliders to simulate custom economic contraction models.</div>
+                <div class="section-desc">Toggle the horizon view or adjust vector sliders simultaneously to simulate complex economic stress contractions.</div>
                 
                 <div class="control-panel">
                     <div class="control-group">
@@ -84,18 +82,15 @@
                         </select>
                     </div>
                     
+                    <!-- 🌟 DUAL INTERACTIVE SIMULATION SLIDERS -->
                     <div class="control-group">
-                        <label for="featureSelect">2. Target Feature for Artificial Stress Shock:</label>
-                        <select id="featureSelect">
-                            <option value="0">Unemployment Rate (Column 0)</option>
-                            <option value="1">Effective Fed Funds Rate (Column 1)</option>
-                        </select>
+                        <label for="unrateSlider">2. Unemployment Rate Shock Delta: <span id="unrateVal" class="slider-value">+0.00%</span></label>
+                        <input type="range" id="unrateSlider" min="-2.00" max="2.00" step="0.25" value="0.00" oninput="document.getElementById('unrateVal').innerText = (this.value >= 0 ? '+' : '') + this.value + '%';">
                     </div>
-                    
+
                     <div class="control-group">
-                        <label for="multiplierSlider">3. Inject Additive Shock Variance Delta:</label>
-                        <input type="range" id="multiplierSlider" min="-2.00" max="2.00" step="0.25" value="0.00" oninput="document.getElementById('sliderVal').innerText = (this.value >= 0 ? '+' : '') + this.value + '%';">
-                        <div style="margin-top: 8px;"><span id="sliderVal" class="slider-value" style="float:none; display:inline-block;">+0.00%</span></div>
+                        <label for="fedfundsSlider">3. Federal Funds Rate Shock Delta: <span id="fedfundsVal" class="slider-value">+0.00%</span></label>
+                        <input type="range" id="fedfundsSlider" min="-2.00" max="2.00" step="0.25" value="0.00" oninput="document.getElementById('fedfundsVal').innerText = (this.value >= 0 ? '+' : '') + this.value + '%';">
                     </div>
                 </div>
                 
@@ -131,20 +126,21 @@
     <script>
         window.executeSimulationEngine = async function() {
             var statusText = document.getElementById("statusIndicator");
-            statusText.innerText = "⏳ Packaging tensor payloads and querying serverless cloud layers...";
+            statusText.innerText = "⏳ Packaging multi-variable payloads and querying cloud layers...";
             statusText.style.color = "#d97706";
             
             var url_fragments = ["https://", "aql3xchp5j", ".execute-api.", "us-west-2", ".amazonaws.com", "/calendar-bridge"];
             var PROXY_API_URL = url_fragments.join("");
             
             var horizon = document.getElementById("horizonSelect").value;
-            var featIdx = document.getElementById("featureSelect").value;
-            var shockVal = parseFloat(document.getElementById("multiplierSlider").value);
+            var unrateShock = parseFloat(document.getElementById("unrateSlider").value);
+            var fedfundsShock = parseFloat(document.getElementById("fedfundsSlider").value);
             
+            // 🌟 CONTRACT EXTENSION: Pass both custom variance metrics simultaneously
             var payload = {
                 "horizon": horizon,
-                "shock_feature": featIdx,
-                "shock_value": shockVal
+                "unrate_shock": unrateShock,
+                "fedfunds_shock": fedfundsShock
             };
             
             try {
@@ -176,11 +172,7 @@ for (var i = 0; i < bars.length; i++) {
 if (cleanData[i] !== undefined) {
 bars[i].style.height = Math.max(16, cleanData[i]) + "%";
 bars[i].style.backgroundColor = cleanData[i] > 50 ? "#ef4444" : "#3b82f6";
-// Clear any old text tracks completely
 bars[i].innerHTML = "";
-// 🌟 RUNTIME INLINE ELEMENT GENERATION BYPASSES BROWSER CACHE CAUSE:
-// Forcing elements to form using distinct DOM nodes with explicit styling strings
-// completely ignores cached external stylesheets.
 var valSpan = document.createElement("span");
 valSpan.innerText = Math.round(cleanData[i]) + "%";
 valSpan.style.cssText = "position:absolute; top:-24px; left:0; width:100%; text-align:center; font-size:12px; font-weight:700; color:#0f172a;";
