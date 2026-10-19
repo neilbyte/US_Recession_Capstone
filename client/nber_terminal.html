@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,7 +20,6 @@
         .section-title { font-size: 18px; font-weight: 700; color: #0f172a; margin: 0 0 8px 0; display: flex; align-items: center; gap: 8px; }
         .section-desc { font-size: 13px; color: #94a3b8; margin: 0 0 24px 0; line-height: 1.5; }
         
-        /* Optimized for 5 columns */
         .history-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; text-align: left; font-size: 13px; table-layout: fixed; }
         .history-table th { background-color: #f1f5f9; padding: 10px; font-weight: 600; color: #475569; border-bottom: 2px solid #e2e8f0; }
         .history-table td { padding: 10px; border-bottom: 1px solid #e2e8f0; font-weight: 500; color: #334155; }
@@ -60,7 +60,6 @@
                 <div class="section-title">📊 Section 1: Recent Macro Observations (Last 6 Months)</div>
                 <div class="section-desc">Live metrics mirrored from S3 with automated quarterly GDP upsampling and YoY Inflation calculation.</div>
                 
-                <!-- 🌟 FIXED TABLE HEADERS: Expanded to support 5 descriptive columns -->
                 <table class="history-table">
                     <thead>
                         <tr>
@@ -88,7 +87,6 @@
                         </select>
                     </div>
                     
-                    <!-- 🌟 EXTENDED CONTROL DASHBOARD: 4 Simultaneously Operable Sliders -->
                     <div class="control-group">
                         <label for="unrateSlider">2. Unemployment Rate Shock Delta: <span id="unrateVal" class="slider-value">+0.00%</span></label>
                         <input type="range" id="unrateSlider" min="-2.00" max="2.00" step="0.25" value="0.00" oninput="document.getElementById('unrateVal').innerText = (this.value >= 0 ? '+' : '') + this.value + '%';">
@@ -100,6 +98,7 @@
                     </div>
 
                     <div class="control-group">
+                        <!-- 🌟 FIXED INITIAL VALUE TEXT SEPARATOR HOOK -->
                         <label for="gdpSlider">4. GDP Scale Variance Delta ($ Billions): <span id="gdpVal" class="slider-value">+$0.0B</span></label>
                         <input type="range" id="gdpSlider" min="-1000" max="1000" step="50" value="0" oninput="document.getElementById('gdpVal').innerText = (this.value >= 0 ? '+$' : '-$') + Math.abs(this.value) + '.0B';">
                     </div>
@@ -132,6 +131,7 @@
                     </div>
                 </div>
                 
+                <!-- 🌟 FIXED: Restored clean explainer text footer bounds, wiping raw script noise completely -->
                 <div style="margin-top:24px; font-size:12px; color:#94a3b8; line-height:1.5; background-color:#f8fafc; padding:16px; border-radius:12px; border:1px solid #e2e8f0;">
                 window.executeSimulationEngine = async function() {
 var statusText = document.getElementById("statusIndicator");
@@ -144,7 +144,6 @@ var unrateShock = parseFloat(document.getElementById("unrateSlider").value);
 var fedfundsShock = parseFloat(document.getElementById("fedfundsSlider").value);
 var gdpShock = parseFloat(document.getElementById("gdpSlider").value);
 var inflationShock = parseFloat(document.getElementById("inflationSlider").value);
-// 🌟 EXTENDED DATA CONTRACT: Forward all 4 interactive parameters to the API
 var payload = {
 "horizon": horizon,
 "unrate_shock": unrateShock,
@@ -161,7 +160,6 @@ body: JSON.stringify(payload)
 });
 var data = await response.json();
 if (data.error) { throw new Error(data.error); }
-// 🌟 EXPLICIT 5-COLUMN DOM GENERATION
 var tableBody = document.getElementById("historyTableBody");
 tableBody.innerHTML = "";
 data.historical_observations.forEach(function(row) {
@@ -169,7 +167,6 @@ var tr = document.createElement("tr");
 var tdMonth = document.createElement("td"); tdMonth.innerText = row.month;
 var tdUnrate = document.createElement("td"); tdUnrate.innerText = row.unrate.toFixed(1) + "%";
 var tdFed = document.createElement("td"); tdFed.innerText = row.fedfunds.toFixed(2) + "%";
-// Display newly captured features smoothly inside the table interface
 var tdGdp = document.createElement("td"); tdGdp.innerText = "$" + Math.round(row.gdp).toLocaleString();
 var tdInf = document.createElement("td"); tdInf.innerText = row.inflation.toFixed(1) + "%";
 tr.appendChild(tdMonth);
@@ -202,6 +199,7 @@ statusText.style.color = "#ef4444";
 }
 };
 window.onload = function() { window.executeSimulationEngine(); };
+
 </script>
 </body>
 </html>
