@@ -36,10 +36,38 @@
         
         #statusIndicator { font-size: 14px; font-weight: 600; color: #475569; margin-bottom: 24px; background-color: #f1f5f9; padding: 12px 16px; border-radius: 10px; display: inline-block; width: 100%; box-sizing: border-box; }
         
-        .chart-container { position: relative; height: 380px; border: 1px solid #e2e8f0; border-radius: 16px; background-color: #f8fafc; display: flex; align-items: flex-end; justify-content: center; padding: 20px 20px 80px 20px; box-sizing: border-box; }
-        #barWrapper { display: flex; gap: 24px; align-items: flex-end; justify-content: center; height: 220px; width: 100%; border-bottom: 2px solid #cbd5e1; padding-bottom: 4px; }
-        
-        .bar { width: 50px; background-color: #cbd5e1; height: 12%; border-radius: 8px 8px 0 0; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); position: relative; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; box-sizing: border-box; padding-top: 8px; }
+        .chart-container { 
+            position: relative; 
+            height: 400px; 
+            border: 1px solid #e2e8f0; 
+            border-radius: 16px; 
+            background-color: #f8fafc; 
+            display: flex; 
+            align-items: flex-end; 
+            justify-content: center; 
+            padding: 20px 20px 80px 20px; 
+            box-sizing: border-box; 
+            margin-top: 40px; 
+        }
+        #barWrapper { 
+            display: flex; 
+            gap: 24px; 
+            align-items: flex-end; 
+            justify-content: center; 
+            height: 220px; 
+            width: 100%; 
+            border-bottom: 2px solid #cbd5e1; 
+            padding-bottom: 4px; 
+        }
+        .bar { 
+            width: 50px; 
+            background-color: #cbd5e1; 
+            height: 12%; 
+            border-radius: 8px 8px 0 0; 
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); 
+            position: relative; 
+            box-sizing: border-box; 
+        }
         .bar-value { font-size: 12px; font-weight: 700; color: #ffffff; text-shadow: 0 1px 2px rgba(0,0,0,0.4); z-index: 10; pointer-events: none; }
         .bar-label { position: absolute; bottom: -54px; font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; left: 50%; transform: translateX(-50%); width: max-content; text-align: center; line-height: 1.4; display: block; }
     </style>
@@ -182,12 +210,32 @@ var cleanData = flatPredictions.map(function(item) { return parseFloat(item * 10
 var labels = data.date_labels || ["M1", "M2", "M3", "M4", "M5", "M6"];
 var bars = document.getElementById("barWrapper").children;
 for (var i = 0; i < bars.length; i++) {
-if (cleanData[i] !== undefined) {
-bars[i].style.height = Math.max(16, cleanData[i]) + "%";
-bars[i].style.backgroundColor = cleanData[i] > 50 ? "#ef4444" : "#3b82f6";
-var labelText = labels[i].split(" ").join("");
-bars[i].innerHTML = "" + Math.round(cleanData[i]) + "%" + labelText + "";
-}
+    if (cleanData[i] !== undefined) {
+        // Set the height and color of the blue/red bars dynamically
+        bars[i].style.height = Math.max(16, cleanData[i]) + "%";
+        bars[i].style.backgroundColor = cleanData[i] > 50 ? "#ef4444" : "#3b82f6";
+        
+        // 🌟 FORCE RUNTIME STRUCTURAL SEPARATION BEYOND ANY STALE CACHE
+        bars[i].innerHTML = ""; 
+        bars[i].style.position = "relative";
+        bars[i].style.display = "flex";
+        bars[i].style.flexDirection = "column";
+        bars[i].style.alignItems = "center";
+        
+        // 1. Create a floating top text node container specifically for the risk score percentage %
+        var valSpan = document.createElement("span");
+        valSpan.innerText = Math.round(cleanData[i]) + "%";
+        valSpan.style.cssText = "position:absolute; top:-28px; left:0; width:100%; text-align:center; font-size:12px; font-weight:700; color:#0f172a; z-index:100;";
+        
+        // 2. Create an absolute bottom text node container specifically for the timeline date labels
+        var lblSpan = document.createElement("span");
+        lblSpan.innerHTML = labels[i].split(" ").join("<br>");
+        lblSpan.style.cssText = "position:absolute; bottom:-56px; left:50%; transform:translateX(-50%); font-size:11px; font-weight:700; color:#64748b; text-transform:uppercase; text-align:center; line-height:1.4; display:block; width:max-content;";
+        
+        // Append both isolated layers onto the bar grid row tract
+        bars[i].appendChild(valSpan);
+        bars[i].appendChild(lblSpan);
+    }
 }
 var currentMonthScore = cleanData[cleanData.length - 1].toFixed(1);
 statusText.innerText = "✅ Forecast Synced! Simulated Target Month Risk: " + currentMonthScore + "%";
