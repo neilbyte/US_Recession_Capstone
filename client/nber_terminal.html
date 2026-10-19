@@ -181,8 +181,7 @@ for (var i = 0; i < bars.length; i++) {
 if (cleanData[i] !== undefined) {
 bars[i].style.height = Math.max(16, cleanData[i]) + "%";
 bars[i].style.backgroundColor = cleanData[i] > 50 ? "#ef4444" : "#3b82f6";
-var labelText = labels[i].split(" ").join("
-");
+var labelText = labels[i].split(" ").join("");
 bars[i].innerHTML = "" + Math.round(cleanData[i]) + "%" + labelText + "";
 }
 }
