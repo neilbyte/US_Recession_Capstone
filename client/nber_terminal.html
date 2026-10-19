@@ -54,7 +54,6 @@
     font-weight: 700; 
     color: #0f172a; 
     z-index: 10; 
-    pointer-events: none; 
 }
 
 .bar-label { 
@@ -216,12 +215,13 @@ var cleanData = flatPredictions.map(function(item) { return parseFloat(item * 10
 var labels = data.date_labels || ["M1", "M2", "M3", "M4", "M5", "M6"];
 var bars = document.getElementById("barWrapper").children;
 for (var i = 0; i < bars.length; i++) {
-if (cleanData[i] !== undefined) {
-bars[i].style.height = Math.max(16, cleanData[i]) + "%";
-bars[i].style.backgroundColor = cleanData[i] > 50 ? "#ef4444" : "#3b82f6";
-var labelText = labels[i].split(" ").join("");
-bars[i].innerHTML = "" + Math.round(cleanData[i]) + "%" + labelText + "";
-}
+    if (cleanData[i] !== undefined) {
+        bars[i].style.height = Math.max(16, cleanData[i]) + "%";
+        bars[i].style.backgroundColor = cleanData[i] > 50 ? "#ef4444" : "#3b82f6";
+        
+        // 🌟 FIXED FLATTENED TEMPLATE: Injects both target classes cleanly on a single line with zero syntax breaks
+        bars[i].innerHTML = "<span class='bar-value'>" + Math.round(cleanData[i]) + "%</span><span class='bar-label'>" + labels[i] + "</span>";
+    }
 }
 var currentMonthScore = cleanData[cleanData.length - 1].toFixed(1);
 statusText.innerText = "✅ Forecast Synced! Simulated Target Month Risk: " + currentMonthScore + "%";
