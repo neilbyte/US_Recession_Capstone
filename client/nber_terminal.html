@@ -119,18 +119,17 @@
                         <label for="unrateSlider">2. Unemployment Rate Shock Delta: <span id="unrateVal" class="slider-value">+0.00%</span></label>
                         <input type="range" id="unrateSlider" min="-2.00" max="2.00" step="0.25" value="0.00" oninput="document.getElementById('unrateVal').innerText = (this.value >= 0 ? '+' : '') + this.value + '%';">
                     </div>
-
+                
                     <div class="control-group">
                         <label for="fedfundsSlider">3. Federal Funds Rate Shock Delta: <span id="fedfundsVal" class="slider-value">+0.00%</span></label>
                         <input type="range" id="fedfundsSlider" min="-2.00" max="2.00" step="0.25" value="0.00" oninput="document.getElementById('fedfundsVal').innerText = (this.value >= 0 ? '+' : '') + this.value + '%';">
                     </div>
-
+                
                     <div class="control-group">
-                        <!-- 🌟 FIXED INITIAL VALUE TEXT SEPARATOR HOOK -->
                         <label for="gdpSlider">4. GDP Scale Variance Delta ($ Billions): <span id="gdpVal" class="slider-value">+$0.0B</span></label>
                         <input type="range" id="gdpSlider" min="-1000" max="1000" step="50" value="0" oninput="document.getElementById('gdpVal').innerText = (this.value >= 0 ? '+$' : '-$') + Math.abs(this.value) + '.0B';">
                     </div>
-
+                
                     <div class="control-group">
                         <label for="inflationSlider">5. Inflation Rate Shock Delta (YoY): <span id="inflationVal" class="slider-value">+0.00%</span></label>
                         <input type="range" id="inflationSlider" min="-3.00" max="3.00" step="0.25" value="0.00" oninput="document.getElementById('inflationVal').innerText = (this.value >= 0 ? '+' : '') + this.value + '%';">
