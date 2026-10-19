@@ -210,28 +210,24 @@ var labels = data.date_labels || ["M1", "M2", "M3", "M4", "M5", "M6"];
 var bars = document.getElementById("barWrapper").children;
 for (var i = 0; i < bars.length; i++) {
     if (cleanData[i] !== undefined) {
-        // Set the height and color of the blue/red bars dynamically
         bars[i].style.height = Math.max(16, cleanData[i]) + "%";
         bars[i].style.backgroundColor = cleanData[i] > 50 ? "#ef4444" : "#3b82f6";
         
-        // 🌟 FORCE RUNTIME STRUCTURAL SEPARATION BEYOND ANY STALE CACHE
         bars[i].innerHTML = ""; 
         bars[i].style.position = "relative";
         bars[i].style.display = "flex";
         bars[i].style.flexDirection = "column";
         bars[i].style.alignItems = "center";
         
-        // 1. Create a floating top text node container specifically for the risk score percentage %
         var valSpan = document.createElement("span");
         valSpan.innerText = Math.round(cleanData[i]) + "%";
         valSpan.style.cssText = "position:absolute; top:-28px; left:0; width:100%; text-align:center; font-size:12px; font-weight:700; color:#0f172a; z-index:100;";
         
-        // 2. Create an absolute bottom text node container specifically for the timeline date labels
         var lblSpan = document.createElement("span");
-        lblSpan.innerHTML = labels[i].split(" ").join("<br>");
+        // 🌟 NATIVE REGEX REPLACE: Replaces all spaces with <br> cleanly on one single line
+        lblSpan.innerHTML = labels[i].replace(/ /g, "<br>"); 
         lblSpan.style.cssText = "position:absolute; bottom:-56px; left:50%; transform:translateX(-50%); font-size:11px; font-weight:700; color:#64748b; text-transform:uppercase; text-align:center; line-height:1.4; display:block; width:max-content;";
         
-        // Append both isolated layers onto the bar grid row tract
         bars[i].appendChild(valSpan);
         bars[i].appendChild(lblSpan);
     }
