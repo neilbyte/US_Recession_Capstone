@@ -19,15 +19,16 @@
         .section-title { font-size: 18px; font-weight: 700; color: #0f172a; margin: 0 0 8px 0; display: flex; align-items: center; gap: 8px; }
         .section-desc { font-size: 13px; color: #94a3b8; margin: 0 0 24px 0; line-height: 1.5; }
         
-        .history-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; text-align: left; font-size: 14px; table-layout: fixed; }
-        .history-table th { background-color: #f1f5f9; padding: 12px; font-weight: 600; color: #475569; border-bottom: 2px solid #e2e8f0; }
-        .history-table td { padding: 12px; border-bottom: 1px solid #e2e8f0; font-weight: 500; color: #334155; }
+        /* Optimized for 5 columns */
+        .history-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; text-align: left; font-size: 13px; table-layout: fixed; }
+        .history-table th { background-color: #f1f5f9; padding: 10px; font-weight: 600; color: #475569; border-bottom: 2px solid #e2e8f0; }
+        .history-table td { padding: 10px; border-bottom: 1px solid #e2e8f0; font-weight: 500; color: #334155; }
         
         .control-panel { background-color: #f8fafc; padding: 24px; border-radius: 16px; border: 1px solid #e2e8f0; margin-bottom: 20px; }
-        .control-group { margin-bottom: 20px; }
+        .control-group { margin-bottom: 16px; }
         .control-group:last-child { margin-bottom: 0; }
-        label { display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 8px; }
-        select, input[type="range"] { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; background-color: #fff; font-size: 14px; box-sizing: border-box; }
+        label { display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 6px; }
+        select, input[type="range"] { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; background-color: #fff; font-size: 14px; box-sizing: border-box; }
         .slider-value { float: right; font-family: monospace; font-weight: 700; color: #2563eb; }
         
         button { width: 100%; background-color: #2563eb; color: #ffffff; font-weight: 600; padding: 14px; border-radius: 12px; border: none; cursor: pointer; font-size: 15px; transition: background-color 0.2s; }
@@ -38,7 +39,9 @@
         .chart-container { position: relative; height: 380px; border: 1px solid #e2e8f0; border-radius: 16px; background-color: #f8fafc; display: flex; align-items: flex-end; justify-content: center; padding: 20px 20px 80px 20px; box-sizing: border-box; }
         #barWrapper { display: flex; gap: 24px; align-items: flex-end; justify-content: center; height: 220px; width: 100%; border-bottom: 2px solid #cbd5e1; padding-bottom: 4px; }
         
-        .bar { width: 50px; background-color: #cbd5e1; height: 12%; border-radius: 8px 8px 0 0; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); position: relative; display: flex; justify-content: center; box-sizing: border-box; }
+        .bar { width: 50px; background-color: #cbd5e1; height: 12%; border-radius: 8px 8px 0 0; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); position: relative; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; box-sizing: border-box; padding-top: 8px; }
+        .bar-value { font-size: 12px; font-weight: 700; color: #ffffff; text-shadow: 0 1px 2px rgba(0,0,0,0.4); z-index: 10; pointer-events: none; }
+        .bar-label { position: absolute; bottom: -54px; font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; left: 50%; transform: translateX(-50%); width: max-content; text-align: center; line-height: 1.4; display: block; }
     </style>
 </head>
 <body>
@@ -49,29 +52,32 @@
                 <h1 class="title">NBER Interactive Prediction Terminal</h1>
                 <div class="subtitle">Observing Real-Time Macro Trajectories and Simulating Artificial Stress Testing Horizons</div>
             </div>
-            <div class="badge">📡 Live Keras LSTM Node</div>
+            <div class="badge">📡 Retrained 4-Feature LSTM</div>
         </div>
 
         <div class="dashboard-grid">
             <div class="card">
                 <div class="section-title">📊 Section 1: Recent Macro Observations (Last 6 Months)</div>
-                <div class="section-desc">Live historical indicators retrieved directly from your Amazon S3 subfolder data mirror.</div>
+                <div class="section-desc">Live metrics mirrored from S3 with automated quarterly GDP upsampling and YoY Inflation calculation.</div>
                 
+                <!-- 🌟 FIXED TABLE HEADERS: Expanded to support 5 descriptive columns -->
                 <table class="history-table">
                     <thead>
                         <tr>
-                            <th>Month Reference</th>
-                            <th>Unemployment Rate</th>
-                            <th>Federal Funds Rate</th>
+                            <th>Month</th>
+                            <th>Unemployment</th>
+                            <th>Fed Funds</th>
+                            <th>GDP (Billions)</th>
+                            <th>Inflation (YoY)</th>
                         </tr>
                     </thead>
                     <tbody id="historyTableBody">
-                        <tr><td colspan="3" style="color:#94a3b8; text-align:center;">Querying cloud storage layers...</td></tr>
+                        <tr><td colspan="5" style="color:#94a3b8; text-align:center;">Querying cloud storage layers...</td></tr>
                     </tbody>
                 </table>
 
                 <div class="section-title">🔮 Section 2: Predictive Risk Simulator</div>
-                <div class="section-desc">Toggle the horizon view or adjust vector sliders simultaneously to simulate complex economic stress contractions.</div>
+                <div class="section-desc">Simulate complex macro stress events by adjusting all 4 foundational parameters simultaneously.</div>
                 
                 <div class="control-panel">
                     <div class="control-group">
@@ -82,7 +88,7 @@
                         </select>
                     </div>
                     
-                    <!-- 🌟 DUAL INTERACTIVE SIMULATION SLIDERS -->
+                    <!-- 🌟 EXTENDED CONTROL DASHBOARD: 4 Simultaneously Operable Sliders -->
                     <div class="control-group">
                         <label for="unrateSlider">2. Unemployment Rate Shock Delta: <span id="unrateVal" class="slider-value">+0.00%</span></label>
                         <input type="range" id="unrateSlider" min="-2.00" max="2.00" step="0.25" value="0.00" oninput="document.getElementById('unrateVal').innerText = (this.value >= 0 ? '+' : '') + this.value + '%';">
@@ -91,6 +97,16 @@
                     <div class="control-group">
                         <label for="fedfundsSlider">3. Federal Funds Rate Shock Delta: <span id="fedfundsVal" class="slider-value">+0.00%</span></label>
                         <input type="range" id="fedfundsSlider" min="-2.00" max="2.00" step="0.25" value="0.00" oninput="document.getElementById('fedfundsVal').innerText = (this.value >= 0 ? '+' : '') + this.value + '%';">
+                    </div>
+
+                    <div class="control-group">
+                        <label for="gdpSlider">4. GDP Scale Variance Delta ($ Billions): <span id="gdpVal" class="slider-value">+$0.0B</span></label>
+                        <input type="range" id="gdpSlider" min="-1000" max="1000" step="50" value="0" oninput="document.getElementById('gdpVal').innerText = (this.value >= 0 ? '+$' : '-$') + Math.abs(this.value) + '.0B';">
+                    </div>
+
+                    <div class="control-group">
+                        <label for="inflationSlider">5. Inflation Rate Shock Delta (YoY): <span id="inflationVal" class="slider-value">+0.00%</span></label>
+                        <input type="range" id="inflationSlider" min="-3.00" max="3.00" step="0.25" value="0.00" oninput="document.getElementById('inflationVal').innerText = (this.value >= 0 ? '+' : '') + this.value + '%';">
                     </div>
                 </div>
                 
@@ -117,42 +133,35 @@
                 </div>
                 
                 <div style="margin-top:24px; font-size:12px; color:#94a3b8; line-height:1.5; background-color:#f8fafc; padding:16px; border-radius:12px; border:1px solid #e2e8f0;">
-                    <strong>Model Explanation:</strong> The final bar represents your shocked/simulated target month. Red fills indicate a high-risk structural contraction state (&gt;50% probability), while blue columns track a stable expansion corridor.
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        window.executeSimulationEngine = async function() {
-            var statusText = document.getElementById("statusIndicator");
-            statusText.innerText = "⏳ Packaging multi-variable payloads and querying cloud layers...";
-            statusText.style.color = "#d97706";
-            
-            var url_fragments = ["https://", "aql3xchp5j", ".execute-api.", "us-west-2", ".amazonaws.com", "/calendar-bridge"];
-            var PROXY_API_URL = url_fragments.join("");
-            
-            var horizon = document.getElementById("horizonSelect").value;
-            var unrateShock = parseFloat(document.getElementById("unrateSlider").value);
-            var fedfundsShock = parseFloat(document.getElementById("fedfundsSlider").value);
-            
-            // 🌟 CONTRACT EXTENSION: Pass both custom variance metrics simultaneously
-            var payload = {
-                "horizon": horizon,
-                "unrate_shock": unrateShock,
-                "fedfunds_shock": fedfundsShock
-            };
-            
-            try {
-                var response = await fetch(PROXY_API_URL, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    mode: "cors",
-                    body: JSON.stringify(payload)
-                });
-                
-                var data = await response.json();
+                window.executeSimulationEngine = async function() {
+var statusText = document.getElementById("statusIndicator");
+statusText.innerText = "⏳ Packaging multi-variable payloads and querying cloud layers...";
+statusText.style.color = "#d97706";
+var url_fragments = ["https://", "aql3xchp5j", ".execute-api.", "us-west-2", ".amazonaws.com", "/calendar-bridge"];
+var PROXY_API_URL = url_fragments.join("");
+var horizon = document.getElementById("horizonSelect").value;
+var unrateShock = parseFloat(document.getElementById("unrateSlider").value);
+var fedfundsShock = parseFloat(document.getElementById("fedfundsSlider").value);
+var gdpShock = parseFloat(document.getElementById("gdpSlider").value);
+var inflationShock = parseFloat(document.getElementById("inflationSlider").value);
+// 🌟 EXTENDED DATA CONTRACT: Forward all 4 interactive parameters to the API
+var payload = {
+"horizon": horizon,
+"unrate_shock": unrateShock,
+"fedfunds_shock": fedfundsShock,
+"gdp_shock": gdpShock,
+"inflation_shock": inflationShock
+};
+try {
+var response = await fetch(PROXY_API_URL, {
+method: "POST",
+headers: { "Content-Type": "application/json" },
+mode: "cors",
+body: JSON.stringify(payload)
+});
+var data = await response.json();
 if (data.error) { throw new Error(data.error); }
+// 🌟 EXPLICIT 5-COLUMN DOM GENERATION
 var tableBody = document.getElementById("historyTableBody");
 tableBody.innerHTML = "";
 data.historical_observations.forEach(function(row) {
@@ -160,7 +169,14 @@ var tr = document.createElement("tr");
 var tdMonth = document.createElement("td"); tdMonth.innerText = row.month;
 var tdUnrate = document.createElement("td"); tdUnrate.innerText = row.unrate.toFixed(1) + "%";
 var tdFed = document.createElement("td"); tdFed.innerText = row.fedfunds.toFixed(2) + "%";
-tr.appendChild(tdMonth); tr.appendChild(tdUnrate); tr.appendChild(tdFed);
+// Display newly captured features smoothly inside the table interface
+var tdGdp = document.createElement("td"); tdGdp.innerText = "$" + Math.round(row.gdp).toLocaleString();
+var tdInf = document.createElement("td"); tdInf.innerText = row.inflation.toFixed(1) + "%";
+tr.appendChild(tdMonth);
+tr.appendChild(tdUnrate);
+tr.appendChild(tdFed);
+tr.appendChild(tdGdp);
+tr.appendChild(tdInf);
 tableBody.appendChild(tr);
 });
 var raw_array = data.predictions || data.output_0 || data;
@@ -172,15 +188,9 @@ for (var i = 0; i < bars.length; i++) {
 if (cleanData[i] !== undefined) {
 bars[i].style.height = Math.max(16, cleanData[i]) + "%";
 bars[i].style.backgroundColor = cleanData[i] > 50 ? "#ef4444" : "#3b82f6";
-bars[i].innerHTML = "";
-var valSpan = document.createElement("span");
-valSpan.innerText = Math.round(cleanData[i]) + "%";
-valSpan.style.cssText = "position:absolute; top:-24px; left:0; width:100%; text-align:center; font-size:12px; font-weight:700; color:#0f172a;";
-var lblSpan = document.createElement("span");
-lblSpan.innerHTML = labels[i].split(" ").join("");
-lblSpan.style.cssText = "position:absolute; bottom:-56px; left:50%; transform:translateX(-50%); font-size:11px; font-weight:700; color:#64748b; text-transform:uppercase; text-align:center; line-height:1.4; display:block; width:max-content;";
-bars[i].appendChild(valSpan);
-bars[i].appendChild(lblSpan);
+var labelText = labels[i].split(" ").join("
+");
+bars[i].innerHTML = "" + Math.round(cleanData[i]) + "%" + labelText + "";
 }
 }
 var currentMonthScore = cleanData[cleanData.length - 1].toFixed(1);
@@ -192,8 +202,7 @@ statusText.style.color = "#ef4444";
 }
 };
 window.onload = function() { window.executeSimulationEngine(); };
-
-    </script>            
+</script>
 </body>
 </html>
 
