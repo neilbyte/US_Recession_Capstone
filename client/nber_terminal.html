@@ -170,7 +170,8 @@
         var statusText = document.getElementById("statusIndicator");
 statusText.innerText = "⏳ Packaging multi-variable payloads and querying cloud layers...";
 statusText.style.color = "#d97706";
-var url_fragments = ["https://", "aql3xchp5j", ".execute-api.", "us-west-2", ".amazonaws.com", "/calendar-bridge"];
+//var url_fragments = ["https://", "aql3xchp5j", ".execute-api.", "us-west-2", ".amazonaws.com", "/calendar-bridge"];
+var url_fragments = ["https://", "ipy1wbod54", ".execute-api.", "us-west-2", ".amazonaws.com", "/default/lstm-nber-production-handler"];
 var PROXY_API_URL = url_fragments.join("");
 var horizon = document.getElementById("horizonSelect").value;
 var unrateShock = parseFloat(document.getElementById("unrateSlider").value);
