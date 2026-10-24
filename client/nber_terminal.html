@@ -167,74 +167,93 @@
 
     <script>
         window.executeSimulationEngine = async function() {
-        var statusText = document.getElementById("statusIndicator");
-statusText.innerText = "⏳ Packaging multi-variable payloads and querying cloud layers...";
-statusText.style.color = "#d97706";
-//var url_fragments = ["https://", "aql3xchp5j", ".execute-api.", "us-west-2", ".amazonaws.com", "/calendar-bridge"];
-var url_fragments = ["https://", "7z2dw6dju7", ".execute-api.", "us-west-2", ".amazonaws.com", "/default", "/lstm-nber-production-handler"];
-var PROXY_API_URL = url_fragments.join("");
-var horizon = document.getElementById("horizonSelect").value;
-var unrateShock = parseFloat(document.getElementById("unrateSlider").value);
-var fedfundsShock = parseFloat(document.getElementById("fedfundsSlider").value);
-var gdpShock = parseFloat(document.getElementById("gdpSlider").value);
-var inflationShock = parseFloat(document.getElementById("inflationSlider").value);
-var payload = {
-"horizon": horizon,
-"unrate_shock": unrateShock,
-"fedfunds_shock": fedfundsShock,
-"gdp_shock": gdpShock,
-"inflation_shock": inflationShock
-};
-try {
-var response = await fetch(PROXY_API_URL, {
-method: "POST",
-headers: { "Content-Type": "application/json" },
-mode: "cors",
-body: JSON.stringify(payload)
-});
-var data = await response.json();
-if (data.error) { throw new Error(data.error); }
-var tableBody = document.getElementById("historyTableBody");
-tableBody.innerHTML = "";
-data.historical_observations.forEach(function(row) {
-var tr = document.createElement("tr");
-var tdMonth = document.createElement("td"); tdMonth.innerText = row.month;
-var tdUnrate = document.createElement("td"); tdUnrate.innerText = row.unrate.toFixed(1) + "%";
-var tdFed = document.createElement("td"); tdFed.innerText = row.fedfunds.toFixed(2) + "%";
-var tdGdp = document.createElement("td"); tdGdp.innerText = "$" + Math.round(row.gdp).toLocaleString();
-var tdInf = document.createElement("td"); tdInf.innerText = row.inflation.toFixed(1) + "%";
-tr.appendChild(tdMonth);
-tr.appendChild(tdUnrate);
-tr.appendChild(tdFed);
-tr.appendChild(tdGdp);
-tr.appendChild(tdInf);
-tableBody.appendChild(tr);
-});
-var raw_array = data.predictions || data.output_0 || data;
-var flatPredictions = Array.isArray(raw_array) ? raw_array.flat(Infinity) : [raw_array];
-var cleanData = flatPredictions.map(function(item) { return parseFloat(item * 100); });
-var labels = data.date_labels || ["M1", "M2", "M3", "M4", "M5", "M6"];
-var bars = document.getElementById("barWrapper").children;
-for (var i = 0; i < bars.length; i++) {
-    if (cleanData[i] !== undefined) {
-        bars[i].style.height = Math.max(16, cleanData[i]) + "%";
-        bars[i].style.backgroundColor = cleanData[i] > 50 ? "#ef4444" : "#3b82f6";
-        
-        // 🌟 FIXED FLATTENED TEMPLATE: Injects both target classes cleanly on a single line with zero syntax breaks
-        bars[i].innerHTML = "<span class='bar-value'>" + Math.round(cleanData[i]) + "%</span><span class='bar-label'>" + labels[i] + "</span>";
-    }
-}
-var currentMonthScore = cleanData[cleanData.length - 1].toFixed(1);
-statusText.innerText = "✅ Forecast Synced! Simulated Target Month Risk: " + currentMonthScore + "%";
-statusText.style.color = "#16a34a";
-} catch (error) {
-statusText.innerText = "❌ Request Rejected: " + error.message;
-statusText.style.color = "#ef4444";
-}
-};
-window.onload = function() { window.executeSimulationEngine(); };
+            var statusText = document.getElementById("statusIndicator");
+            statusText.innerText = "⏳ Packaging multi-variable payloads and querying cloud layers...";
+            statusText.style.color = "#d97706";
 
-</script>
+            // 🌟 DYNAMIC ROUTING MATRIX: Read the client dropdown state to choose the target endpoint
+            var engineSelector = document.getElementById("engineSelector");
+            var selectedEngine = engineSelector ? engineSelector.value : "bilstm";
+            var PROXY_API_URL = "";
+
+            if (selectedEngine === "sequential") {
+                // Route to previous local math-based handler
+                var sequential_fragments = ["https://", "aql3xchp5j", ".execute-api.", "us-west-2", ".amazonaws.com", "/calendar-bridge"];
+                PROXY_API_URL = sequential_fragments.join("");
+            } else {
+                // Default: Route to new AWS SageMaker Serverless Bidirectional LSTM container layer
+                var bilstm_fragments = ["https://", "7z2dw6dju7", ".execute-api.", "us-west-2", ".amazonaws.com", "/default", "/lstm-nber-production-handler"];
+                PROXY_API_URL = bilstm_fragments.join("");
+            }
+
+            var horizon = document.getElementById("horizonSelect").value;
+            var unrateShock = parseFloat(document.getElementById("unrateSlider").value);
+            var fedfundsShock = parseFloat(document.getElementById("fedfundsSlider").value);
+            var gdpShock = parseFloat(document.getElementById("gdpSlider").value);
+            var inflationShock = parseFloat(document.getElementById("inflationSlider").value);
+            
+            var payload = {
+                "horizon": horizon,
+                "unrate_shock": unrateShock,
+                "fedfunds_shock": fedfundsShock,
+                "gdp_shock": gdpShock,
+                "inflation_shock": inflationShock
+            };
+
+            try {
+                var response = await fetch(PROXY_API_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    mode: "cors",
+                    body: JSON.stringify(payload)
+                });
+                
+                var data = await response.json();
+                if (data.error) { throw new Error(data.error); }
+                
+                var tableBody = document.getElementById("historyTableBody");
+                tableBody.innerHTML = "";
+                data.historical_observations.forEach(function(row) {
+                    var tr = document.createElement("tr");
+                    var tdMonth = document.createElement("td"); tdMonth.innerText = row.month;
+                    var tdUnrate = document.createElement("td"); tdUnrate.innerText = row.unrate.toFixed(1) + "%";
+                    var tdFed = document.createElement("td"); tdFed.innerText = row.fedfunds.toFixed(2) + "%";
+                    var tdGdp = document.createElement("td"); tdGdp.innerText = "$" + Math.round(row.gdp).toLocaleString();
+                    var tdInf = document.createElement("td"); tdInf.innerText = row.inflation.toFixed(1) + "%";
+                    tr.appendChild(tdMonth);
+                    tr.appendChild(tdUnrate);
+                    tr.appendChild(tdFed);
+                    tr.appendChild(tdGdp);
+                    tr.appendChild(tdInf);
+                    tableBody.appendChild(tr);
+                });
+
+                var raw_array = data.predictions || data.output_0 || data;
+                var flatPredictions = Array.isArray(raw_array) ? raw_array.flat(Infinity) : [raw_array];
+                var cleanData = flatPredictions.map(function(item) { return parseFloat(item * 100); });
+                var labels = data.date_labels || ["M1", "M2", "M3", "M4", "M5", "M6"];
+                
+                var bars = document.getElementById("barWrapper").children;
+                for (var i = 0; i < bars.length; i++) {
+                    if (cleanData[i] !== undefined) {
+                        bars[i].style.height = Math.max(16, cleanData[i]) + "%";
+                        bars[i].style.backgroundColor = cleanData[i] > 50 ? "#ef4444" : "#3b82f6";
+                        bars[i].innerHTML = "<span class='bar-value'>" + Math.round(cleanData[i]) + "%</span><span class='bar-label'>" + labels[i] + "</span>";
+                    }
+                }
+                
+                var currentMonthScore = cleanData[cleanData.length - 1].toFixed(1);
+                statusText.innerText = "✅ Forecast Synced! Simulated Target Month Risk: " + currentMonthScore + "%";
+                statusText.style.color = "#16a34a";
+            } catch (error) {
+                statusText.innerText = "❌ Request Rejected: " + error.message;
+                statusText.style.color = "#ef4444";
+            }
+        };
+
+        window.onload = function() { window.executeSimulationEngine(); };
+
+    </script>
 </body>
 </html>
 
