@@ -107,7 +107,7 @@
                 <div class="section-desc">Simulate complex macro stress events by adjusting all 4 foundational parameters simultaneously.</div>
                 
                 <div class="control-panel">
-                    <!-- 🌟 INTEGRATED INFRASTRUCTURE DROPDOWN: Positioned first to establish execution tier selection -->
+                    <!-- 1. Select Core Computation Engine Infrastructure -->
                     <div class="control-group">
                         <label for="engineSelector" style="font-weight: bold; display: block; margin-bottom: 6px;">1. Select Core Computation Engine Infrastructure:</label>
                         <select id="engineSelector" onchange="window.executeSimulationEngine()" style="background-color: #ffffff; color: #1e293b; border: 1px solid #cbd5e1; padding: 10px; border-radius: 8px; width: 100%; font-size: 14px; cursor: pointer; font-family: inherit;">
@@ -124,24 +124,26 @@
                         </select>
                     </div>
                     
+                    <!-- 🌟 EXTENDED BOUNDARIES: Min/Max values bumped to +/- 10.00% -->
                     <div class="control-group">
                         <label for="unrateSlider">3. Unemployment Rate Shock Delta: <span id="unrateVal" class="slider-value">+0.00%</span></label>
-                        <input type="range" id="unrateSlider" min="-2.00" max="2.00" step="0.25" value="0.00" oninput="document.getElementById('unrateVal').innerText = (this.value >= 0 ? '+' : '') + this.value + '%';">
+                        <input type="range" id="unrateSlider" min="-10.00" max="10.00" step="0.25" value="0.00" oninput="document.getElementById('unrateVal').innerText = (this.value >= 0 ? '+' : '') + parseFloat(this.value).toFixed(2) + '%';">
                     </div>
 
                     <div class="control-group">
                         <label for="fedfundsSlider">4. Federal Funds Rate Shock Delta: <span id="fedfundsVal" class="slider-value">+0.00%</span></label>
-                        <input type="range" id="fedfundsSlider" min="-2.00" max="2.00" step="0.25" value="0.00" oninput="document.getElementById('fedfundsVal').innerText = (this.value >= 0 ? '+' : '') + this.value + '%';">
+                        <input type="range" id="fedfundsSlider" min="-10.00" max="10.00" step="0.25" value="0.00" oninput="document.getElementById('fedfundsVal').innerText = (this.value >= 0 ? '+' : '') + parseFloat(this.value).toFixed(2) + '%';">
                     </div>
 
+                    <!-- 🌟 EXTENDED GDP BOUNDARIES: Bumped to +/- 5000 -->
                     <div class="control-group">
                         <label for="gdpSlider">5. GDP Scale Variance Delta ($ Billions): <span id="gdpVal" class="slider-value">+$0.0B</span></label>
-                        <input type="range" id="gdpSlider" min="-1000" max="1000" step="50" value="0" oninput="document.getElementById('gdpVal').innerText = (this.value >= 0 ? '+$' : '-$') + Math.abs(this.value) + '.0B';">
+                        <input type="range" id="gdpSlider" min="-5000" max="5000" step="250" value="0" oninput="document.getElementById('gdpVal').innerText = (this.value >= 0 ? '+$' : '-$') + Math.abs(this.value).toLocaleString() + '.0B';">
                     </div>
 
                     <div class="control-group">
                         <label for="inflationSlider">6. Inflation Rate Shock Delta (YoY): <span id="inflationVal" class="slider-value">+0.00%</span></label>
-                        <input type="range" id="inflationSlider" min="-3.00" max="3.00" step="0.25" value="0.00" oninput="document.getElementById('inflationVal').innerText = (this.value >= 0 ? '+' : '') + this.value + '%';">
+                        <input type="range" id="inflationSlider" min="-10.00" max="10.00" step="0.25" value="0.00" oninput="document.getElementById('inflationVal').innerText = (this.value >= 0 ? '+' : '') + parseFloat(this.value).toFixed(2) + '%';">
                     </div>
                 </div>
                 
