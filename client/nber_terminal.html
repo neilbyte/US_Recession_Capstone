@@ -28,48 +28,40 @@
         button { width: 100%; background-color: #2563eb; color: #ffffff; font-weight: 600; padding: 14px; border-radius: 12px; border: none; cursor: pointer; font-size: 15px; transition: background-color 0.2s; }
         button:hover { background-color: #1d4ed8; }
         #statusIndicator { font-size: 14px; font-weight: 600; color: #475569; margin-bottom: 24px; background-color: #f1f5f9; padding: 12px 16px; border-radius: 10px; display: inline-block; width: 100%; box-sizing: border-box; }
-        .chart-container { position: relative; height: 380px; border: 1px solid #e2e8f0; border-radius: 16px; background-color: #f8fafc; display: flex; align-items: flex-end; justify-content: center; padding: 20px 20px 80px 20px; box-sizing: border-box; }
-        #barWrapper { display: flex; gap: 24px; align-items: flex-end; justify-content: center; height: 220px; width: 100%; border-bottom: 2px solid #cbd5e1; padding-bottom: 4px; }
+        .chart-container { 
+            position: relative; 
+            height: 400px; 
+            border: 1px solid #e2e8f0; 
+            border-radius: 16px; 
+            background-color: #f8fafc; 
+            display: flex; 
+            align-items: flex-end; 
+            justify-content: center; 
+            padding: 20px 20px 80px 20px; 
+            box-sizing: border-box; 
+            margin-top: 40px; 
+        }
+        #barWrapper { 
+            display: flex; 
+            gap: 24px; 
+            align-items: flex-end; 
+            justify-content: center; 
+            height: 220px; 
+            width: 100%; 
+            border-bottom: 2px solid #cbd5e1; 
+            padding-bottom: 4px; 
+        }
         .bar { 
-    width: 50px; 
-    background-color: #cbd5e1; 
-    height: 12%; 
-    border-radius: 8px 8px 0 0; 
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); 
-    position: relative; 
-    display: flex; 
-    flex-direction: column; 
-    align-items: center; 
-    justify-content: flex-start; 
-    box-sizing: border-box; 
-}
-
-.bar-value { 
-    position: absolute;
-    top: -24px;
-    left: 0;
-    width: 100%;
-    text-align: center;
-    font-size: 12px; 
-    font-weight: 700; 
-    color: #0f172a; 
-    z-index: 10; 
-}
-
-.bar-label { 
-    position: absolute; 
-    bottom: -54px; 
-    font-size: 11px; 
-    font-weight: 700; 
-    color: #64748b; 
-    text-transform: uppercase; 
-    left: 50%; 
-    transform: translateX(-50%); 
-    width: max-content; 
-    text-align: center; 
-    line-height: 1.4; 
-    display: block; 
-}
+            width: 50px; 
+            background-color: #cbd5e1; 
+            height: 12%; 
+            border-radius: 8px 8px 0 0; 
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); 
+            position: relative; 
+            box-sizing: border-box; 
+        }
+        .bar-value { font-size: 12px; font-weight: 700; color: #ffffff; text-shadow: 0 1px 2px rgba(0,0,0,0.4); z-index: 10; pointer-events: none; }
+        .bar-label { position: absolute; bottom: -54px; font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; left: 50%; transform: translateX(-50%); width: max-content; text-align: center; line-height: 1.4; display: block; }
     </style>
 </head>
 <body>
@@ -107,8 +99,17 @@
                 <div class="section-desc">Simulate complex macro stress events by adjusting all 4 foundational parameters simultaneously.</div>
                 
                 <div class="control-panel">
+                    <!-- 🌟 INTEGRATED INFRASTRUCTURE DROPDOWN: Positioned first to establish execution tier selection -->
                     <div class="control-group">
-                        <label for="horizonSelect">1. Choose Forward Forecast Horizon Target:</label>
+                        <label for="engineSelector" style="font-weight: bold; display: block; margin-bottom: 6px;">1. Select Core Computation Engine Infrastructure:</label>
+                        <select id="engineSelector" onchange="window.executeSimulationEngine()" style="background-color: #ffffff; color: #1e293b; border: 1px solid #cbd5e1; padding: 10px; border-radius: 8px; width: 100%; font-size: 14px; cursor: pointer; font-family: inherit;">
+                            <option value="bilstm">AWS SageMaker Cloud Instance Layer (Bidirectional LSTM)</option>
+                            <option value="sequential">Localized Low-Latency Core Math Tier (Sequential Baseline)</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="horizonSelect">2. Choose Forward Forecast Horizon Target:</label>
                         <select id="horizonSelect">
                             <option value="6M">Next 6 Months (Standard Continuous Vector)</option>
                             <option value="12M">Next 1 Year (Extended Macro Horizon View)</option>
@@ -116,23 +117,23 @@
                     </div>
                     
                     <div class="control-group">
-                        <label for="unrateSlider">2. Unemployment Rate Shock Delta: <span id="unrateVal" class="slider-value">+0.00%</span></label>
-                        <input type="range" id="unrateSlider" min="-10.00" max="10.00" step="0.25" value="0.00" oninput="document.getElementById('unrateVal').innerText = (this.value >= 0 ? '+' : '') + this.value + '%';">
+                        <label for="unrateSlider">3. Unemployment Rate Shock Delta: <span id="unrateVal" class="slider-value">+0.00%</span></label>
+                        <input type="range" id="unrateSlider" min="-2.00" max="2.00" step="0.25" value="0.00" oninput="document.getElementById('unrateVal').innerText = (this.value >= 0 ? '+' : '') + this.value + '%';">
                     </div>
 
                     <div class="control-group">
-                        <label for="fedfundsSlider">3. Federal Funds Rate Shock Delta: <span id="fedfundsVal" class="slider-value">+0.00%</span></label>
-                        <input type="range" id="fedfundsSlider" min="-10.00" max="10.00" step="0.25" value="0.00" oninput="document.getElementById('fedfundsVal').innerText = (this.value >= 0 ? '+' : '') + this.value + '%';">
+                        <label for="fedfundsSlider">4. Federal Funds Rate Shock Delta: <span id="fedfundsVal" class="slider-value">+0.00%</span></label>
+                        <input type="range" id="fedfundsSlider" min="-2.00" max="2.00" step="0.25" value="0.00" oninput="document.getElementById('fedfundsVal').innerText = (this.value >= 0 ? '+' : '') + this.value + '%';">
                     </div>
 
                     <div class="control-group">
-                        <label for="gdpSlider">4. GDP Scale Variance Delta ($ Billions): <span id="gdpVal" class="slider-value">+$0.0B</span></label>
-                        <input type="range" id="gdpSlider" min="-5000" max="5000" step="50" value="0" oninput="document.getElementById('gdpVal').innerText = (this.value >= 0 ? '+$' : '-$') + Math.abs(this.value) + '.0B';">
+                        <label for="gdpSlider">5. GDP Scale Variance Delta ($ Billions): <span id="gdpVal" class="slider-value">+$0.0B</span></label>
+                        <input type="range" id="gdpSlider" min="-1000" max="1000" step="50" value="0" oninput="document.getElementById('gdpVal').innerText = (this.value >= 0 ? '+$' : '-$') + Math.abs(this.value) + '.0B';">
                     </div>
 
                     <div class="control-group">
-                        <label for="inflationSlider">5. Inflation Rate Shock Delta (YoY): <span id="inflationVal" class="slider-value">+0.00%</span></label>
-                        <input type="range" id="inflationSlider" min="-10.00" max="10.00" step="0.25" value="0.00" oninput="document.getElementById('inflationVal').innerText = (this.value >= 0 ? '+' : '') + this.value + '%';">
+                        <label for="inflationSlider">6. Inflation Rate Shock Delta (YoY): <span id="inflationVal" class="slider-value">+0.00%</span></label>
+                        <input type="range" id="inflationSlider" min="-3.00" max="3.00" step="0.25" value="0.00" oninput="document.getElementById('inflationVal').innerText = (this.value >= 0 ? '+' : '') + this.value + '%';">
                     </div>
                 </div>
                 
@@ -163,97 +164,76 @@
                 </div>
             </div>
         </div>
-    </div>
+</div>
 
     <script>
         window.executeSimulationEngine = async function() {
             var statusText = document.getElementById("statusIndicator");
-            statusText.innerText = "⏳ Packaging multi-variable payloads and querying cloud layers...";
-            statusText.style.color = "#d97706";
+statusText.innerText = "⏳ Packaging multi-variable payloads and querying cloud layers...";
+statusText.style.color = "#d97706";
+var url_fragments = ["https://", "aql3xchp5j", ".execute-api.", "us-west-2", ".amazonaws.com", "/calendar-bridge"];
+var PROXY_API_URL = url_fragments.join("");
+var horizon = document.getElementById("horizonSelect").value;
+var unrateShock = parseFloat(document.getElementById("unrateSlider").value);
+var fedfundsShock = parseFloat(document.getElementById("fedfundsSlider").value);
+var gdpShock = parseFloat(document.getElementById("gdpSlider").value);
+var inflationShock = parseFloat(document.getElementById("inflationSlider").value);
+var payload = {
+"horizon": horizon,
+"unrate_shock": unrateShock,
+"fedfunds_shock": fedfundsShock,
+"gdp_shock": gdpShock,
+"inflation_shock": inflationShock
+};
+try {
+var response = await fetch(PROXY_API_URL, {
+method: "POST",
+headers: { "Content-Type": "application/json" },
+mode: "cors",
+body: JSON.stringify(payload)
+});
+var data = await response.json();
+if (data.error) { throw new Error(data.error); }
+var tableBody = document.getElementById("historyTableBody");
+tableBody.innerHTML = "";
+data.historical_observations.forEach(function(row) {
+var tr = document.createElement("tr");
+var tdMonth = document.createElement("td"); tdMonth.innerText = row.month;
+var tdUnrate = document.createElement("td"); tdUnrate.innerText = row.unrate.toFixed(1) + "%";
+var tdFed = document.createElement("td"); tdFed.innerText = row.fedfunds.toFixed(2) + "%";
+var tdGdp = document.createElement("td"); tdGdp.innerText = "$" + Math.round(row.gdp).toLocaleString();
+var tdInf = document.createElement("td"); tdInf.innerText = row.inflation.toFixed(1) + "%";
+tr.appendChild(tdMonth);
+tr.appendChild(tdUnrate);
+tr.appendChild(tdFed);
+tr.appendChild(tdGdp);
+tr.appendChild(tdInf);
+tableBody.appendChild(tr);
+});
+var raw_array = data.predictions || data.output_0 || data;
+var flatPredictions = Array.isArray(raw_array) ? raw_array.flat(Infinity) : [raw_array];
+var cleanData = flatPredictions.map(function(item) { return parseFloat(item * 100); });
+var labels = data.date_labels || ["M1", "M2", "M3", "M4", "M5", "M6"];
+var bars = document.getElementById("barWrapper").children;
+for (var i = 0; i < bars.length; i++) {
+if (cleanData[i] !== undefined) {
+bars[i].style.height = Math.max(16, cleanData[i]) + "%";
+bars[i].style.backgroundColor = cleanData[i] > 50 ? "#ef4444" : "#3b82f6";
+var labelText = labels[i].split(" ").join("");
+bars[i].innerHTML = "" + Math.round(cleanData[i]) + "%" + labelText + "";
+}
+}
+var currentMonthScore = cleanData[cleanData.length - 1].toFixed(1);
+statusText.innerText = "✅ Forecast Synced! Simulated Target Month Risk: " + currentMonthScore + "%";
+statusText.style.color = "#16a34a";
+} catch (error) {
+statusText.innerText = "❌ Request Rejected: " + error.message;
+statusText.style.color = "#ef4444";
+}
+};
+window.onload = function() { window.executeSimulationEngine(); };
 
-            // 🌟 DYNAMIC ROUTING MATRIX: Read the client dropdown state to choose the target endpoint
-            var engineSelector = document.getElementById("engineSelector");
-            var selectedEngine = engineSelector ? engineSelector.value : "bilstm";
-            var PROXY_API_URL = "";
-
-            if (selectedEngine === "sequential") {
-                // Route to previous local math-based handler
-                var sequential_fragments = ["https://", "aql3xchp5j", ".execute-api.", "us-west-2", ".amazonaws.com", "/calendar-bridge"];
-                PROXY_API_URL = sequential_fragments.join("");
-            } else {
-                // Default: Route to new AWS SageMaker Serverless Bidirectional LSTM container layer
-                var bilstm_fragments = ["https://", "7z2dw6dju7", ".execute-api.", "us-west-2", ".amazonaws.com", "/default", "/lstm-nber-production-handler"];
-                PROXY_API_URL = bilstm_fragments.join("");
-            }
-
-            var horizon = document.getElementById("horizonSelect").value;
-            var unrateShock = parseFloat(document.getElementById("unrateSlider").value);
-            var fedfundsShock = parseFloat(document.getElementById("fedfundsSlider").value);
-            var gdpShock = parseFloat(document.getElementById("gdpSlider").value);
-            var inflationShock = parseFloat(document.getElementById("inflationSlider").value);
-            
-            var payload = {
-                "horizon": horizon,
-                "unrate_shock": unrateShock,
-                "fedfunds_shock": fedfundsShock,
-                "gdp_shock": gdpShock,
-                "inflation_shock": inflationShock
-            };
-
-            try {
-                var response = await fetch(PROXY_API_URL, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    mode: "cors",
-                    body: JSON.stringify(payload)
-                });
-                
-                var data = await response.json();
-                if (data.error) { throw new Error(data.error); }
-                
-                var tableBody = document.getElementById("historyTableBody");
-                tableBody.innerHTML = "";
-                data.historical_observations.forEach(function(row) {
-                    var tr = document.createElement("tr");
-                    var tdMonth = document.createElement("td"); tdMonth.innerText = row.month;
-                    var tdUnrate = document.createElement("td"); tdUnrate.innerText = row.unrate.toFixed(1) + "%";
-                    var tdFed = document.createElement("td"); tdFed.innerText = row.fedfunds.toFixed(2) + "%";
-                    var tdGdp = document.createElement("td"); tdGdp.innerText = "$" + Math.round(row.gdp).toLocaleString();
-                    var tdInf = document.createElement("td"); tdInf.innerText = row.inflation.toFixed(1) + "%";
-                    tr.appendChild(tdMonth);
-                    tr.appendChild(tdUnrate);
-                    tr.appendChild(tdFed);
-                    tr.appendChild(tdGdp);
-                    tr.appendChild(tdInf);
-                    tableBody.appendChild(tr);
-                });
-
-                var raw_array = data.predictions || data.output_0 || data;
-                var flatPredictions = Array.isArray(raw_array) ? raw_array.flat(Infinity) : [raw_array];
-                var cleanData = flatPredictions.map(function(item) { return parseFloat(item * 100); });
-                var labels = data.date_labels || ["M1", "M2", "M3", "M4", "M5", "M6"];
-                
-                var bars = document.getElementById("barWrapper").children;
-                for (var i = 0; i < bars.length; i++) {
-                    if (cleanData[i] !== undefined) {
-                        bars[i].style.height = Math.max(16, cleanData[i]) + "%";
-                        bars[i].style.backgroundColor = cleanData[i] > 50 ? "#ef4444" : "#3b82f6";
-                        bars[i].innerHTML = "<span class='bar-value'>" + Math.round(cleanData[i]) + "%</span><span class='bar-label'>" + labels[i] + "</span>";
-                    }
-                }
-                
-                var currentMonthScore = cleanData[cleanData.length - 1].toFixed(1);
-                statusText.innerText = "✅ Forecast Synced! Simulated Target Month Risk: " + currentMonthScore + "%";
-                statusText.style.color = "#16a34a";
-            } catch (error) {
-                statusText.innerText = "❌ Request Rejected: " + error.message;
-                statusText.style.color = "#ef4444";
-            }
-        };
-
-        window.onload = function() { window.executeSimulationEngine(); };
-
-    </script>
+</script>            
 </body>
 </html>
 
