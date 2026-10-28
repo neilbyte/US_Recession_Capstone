@@ -29,42 +29,7 @@ To prevent global state conflicts, memory bloat, and deployment friction, the mo
 
 #🛠️ **Repository Directory Structure**
 
-US_Recession_Capstone/
-├── data/
-    └── US_Recession.csv                            # Sourced via Kaggle https://www.kaggle.com/datasets/shubhaanshkumar/us-recession-dataset/data (for research phase)
-    └── fred_funds.csv                              # Federal FUNDS rate downloaded from Federal Reserver bank https://fred.stlouisfed.org/
-    └── fred_gdp.csv                                # Federal quarterly GDP downloaded from Federal Reserver bank https://fred.stlouisfed.org/
-    └── fred_inflation.csv                          # Federal inflation rate downloaded from Federal Reserver bank https://fred.stlouisfed.org/
-    └── fred_unrate.csv                             # Federal unemployment rate downloaded from Federal Reserver bank https://fred.stlouisfed.org/
-    └── fred_recession.csv                          # Federal recession history downloaded from Federal Reserver bank https://fred.stlouisfed.org/
-    └── data_pipeline/
-        └── harvest_and_sync.ipynb                  # codes to download new Federal FUNDRATE, GDP, inflation, unemployment data into aws S3 bucket
-│
-├── .github/
-    └── workflows/
-        └── data_refresh_ci.yml                     # weekly job to update new data from Federal Reserver Bank
-│
-├── images/
-    ├── classical_models_comparison_chart.png       # Evaluation matrix charts
-    └── coefficients_analysis_chart.png             # Visualization of features impact on US Recession prediction
-│
-├── original_research/
-    └── US_Recession.ipynb                          # Monolithic EDA, baseline testing, and prototyping
-    └── research_readme.md                          # Research document analyzing the results from US_Recession.ipynb
-│
-├── production_models/
-    ├── 01_sequential_lstm.ipynb                    # Sequential training & frozen weight coefficient extraction
-    └── 02_bidirectional_lstm.ipynb                 # Deep Bidirectional modeling & ONNX compilation export
-│
-├── aws_infrastructure/
-    ├── lambda_handler.py                           # Lightweight, zero-cold-start native inference node
-    └── sagemaker_inference.py                      # Runtime container initialization for SageMaker
-│
-├── client/
-    ├── nber_terminal.html                          # Interface terminal window with absolute-offset layout
-    └── app.js                                      # Real-time state management and API Gateway ingestion
-
-└── README.md                                       # Core system documentation
+![Alt text](images/repo_directory.png)
 
 
 #🚀 **Key Engineering & MLOps Implementations**
