@@ -36,12 +36,12 @@ To prevent global state conflicts, memory bloat, and deployment friction, the mo
 *   **02_bidirectional_lstm.ipynb:** Built to capture both forward and backward temporal dependencies in complex stagflationary patterns. The complex architecture is serialized into an **ONNX (Open Neural Network Exchange)** layer format for high-efficiency, runtime-agnostic execution.
 
 
-#🛠️ **Repository Directory Structure**
+## 🛠️ **Repository Directory Structure**
 
 ![Alt text](images/repo_directory.png)
 
 
-#🚀 **Key Engineering & MLOps Implementations**
+## 🚀 **Key Engineering & MLOps Implementations**
 
 *   **Asynchronous Data Alignment Tier:** Solved structural frequency mismatches between monthly metrics (Unemployment, CPI, Fed Funds Rate) and quarterly metrics (GDP) using forward-fill upsampling algorithms to prevent temporal array dimension crashes during tensor injection.
 
@@ -55,7 +55,7 @@ To prevent global state conflicts, memory bloat, and deployment friction, the mo
 
 
 
-#💻 **Tech Stack & Tooling**
+## 💻 **Tech Stack & Tooling**
 
 *   **Core Machine Learning:** Python, Keras 3, TensorFlow, ONNX Runtime, Scikit-Learn, Pandas, NumPy, SciPy
 
