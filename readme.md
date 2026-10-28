@@ -1,16 +1,25 @@
 
-# **US Business Cycle Predictive Terminal**
+## **US Business Cycle Predictive Terminal**
 
 A high-performance, full-stack MLOps forecasting platform that transitions macroeconomic contraction models out of isolated research environments into a zero-maintenance, serverless cloud cluster.
 The architecture features an interactive static frontend web terminal communicating via **Amazon API Gateway** to a hybrid inference engine: a custom, native forward-pass sequential LSTM running on **AWS Lambda** alongside a deep Bidirectional LSTM running inside an **Amazon SageMaker Serverless Endpoint**.
 
 
-#🏗️ **System Architecture Overview**
+## Live UI Page
+
+Please visit URL below to experience the US Recession Forecast Simulation in this project
+    
+    https://neilbyte.github.io/US_Recession_Capstone/client/nber_terminal.html
+
+![Alt text](images/us_recession_UI_page.png)
+
+
+## 🏗️ **System Architecture Overview**
 
 ![Alt text](images/system_architecture.png)
 
 
-#📈 **The Engineering Journey: Research to MLOps Production**
+## 📈 **The Engineering Journey: Research to MLOps Production**
 
 1.   **Exploratory Phase (/original_research)**
 
