@@ -9,7 +9,7 @@ The architecture features an interactive static frontend web terminal communicat
 
 Please visit URL below to experience the US Recession Forecast Simulation in this project
     
-    https://neilbyte.github.io/US_Recession_Capstone/client/nber_terminal.html
+<https://neilbyte.github.io/US_Recession_Capstone/client/nber_terminal.html>
 
 ![Alt text](images/us_recession_UI_page.png)
 
